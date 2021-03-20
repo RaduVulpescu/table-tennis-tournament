@@ -36,7 +36,11 @@ namespace TTT.AWS.Resources
 
             var putPlayerFunction = CreateFunction("put-player-function", "PutPlayerFunction");
             table.Grant(putPlayerFunction, "dynamodb:DescribeTable");
-            table.GrantWriteData(putPlayerFunction);
+            table.GrantReadWriteData(putPlayerFunction);
+
+            var deletePlayerFunction = CreateDeleteFunction("delete-player-function", "DeletePlayerFunction");
+            table.Grant(deletePlayerFunction, "dynamodb:DescribeTable");
+            table.GrantReadWriteData(deletePlayerFunction);
 
             var httpApi = new HttpApi(this, "ttt-http-api", new HttpApiProps
             {
@@ -82,6 +86,16 @@ namespace TTT.AWS.Resources
                     Handler = putPlayerFunction
                 })
             });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/players/{playerId}",
+                Methods = new[] { HttpMethod.DELETE },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = deletePlayerFunction
+                })
+            });
         }
 
         private Function CreateFunction(string functionName, string functionAssembly)
@@ -92,6 +106,18 @@ namespace TTT.AWS.Resources
                 Runtime = Runtime.DOTNET_CORE_3_1,
                 Handler = $"{functionAssembly}::{functionAssembly}.Function::FunctionHandler",
                 Code = Code.FromAsset($"./TableTennisTournament/{functionAssembly}/src/{functionAssembly}/bin/Release/{TargetFrameWork}/publish"),
+                Timeout = Duration.Seconds(30)
+            });
+        }
+
+        private Function CreateDeleteFunction(string functionName, string functionAssembly)
+        {
+            return new Function(this, functionName, new FunctionProps
+            {
+                FunctionName = functionName,
+                Runtime = Runtime.DOTNET_CORE_3_1,
+                Handler = $"{functionAssembly}::{functionAssembly}.Function::FunctionHandler",
+                Code = Code.FromAsset($"./TableTennisTournament/{functionAssembly}/src/{functionAssembly}/bin/Release/{TargetFrameWork}"),
                 Timeout = Duration.Seconds(30)
             });
         }
