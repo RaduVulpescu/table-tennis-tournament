@@ -1,6 +1,6 @@
 ﻿namespace TTT.DomainModel.Entities
 {
-    public interface IEntity
+    public interface IDynamoItem
     {
         string PK { get; set; }
     }

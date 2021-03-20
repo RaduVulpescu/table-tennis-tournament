@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DataModel;
+using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Function;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
@@ -12,14 +12,11 @@ using TTT.DomainModel.Entities;
 
 namespace PostPlayerFunction
 {
-    public class Function
+    public class Function : DynamoFunction
     {
-        public APIGatewayHttpApiV2ProxyResponse FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
+        public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
             var playerDTO = JsonConvert.DeserializeObject<PlayerDTO>(request.Body);
-
-            var client = new AmazonDynamoDBClient(new AmazonDynamoDBConfig());
-            var dynamoDbContext = new DynamoDBContext(client, new DynamoDBContextConfig());
 
             var newPlayer = Player.Create(
                 playerDTO.Name,
@@ -30,11 +27,11 @@ namespace PostPlayerFunction
                 playerDTO.Weight
             );
 
-            dynamoDbContext.SaveAsync(newPlayer).GetAwaiter().GetResult();
+            await DbContext.SaveAsync(newPlayer);
 
             return new APIGatewayHttpApiV2ProxyResponse
             {
-                Body = "asd",
+                Body = JsonConvert.SerializeObject(newPlayer),
                 Headers = new Dictionary<string, string>
                 {
                     { "Location", $"~/players/{newPlayer.PK.Split('#')[1]}" }

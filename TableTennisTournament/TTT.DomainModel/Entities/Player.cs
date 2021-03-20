@@ -4,12 +4,16 @@ using TTT.DomainModel.Enums;
 
 namespace TTT.DomainModel.Entities
 {
-    [DynamoDBTable("players")]
-    public class Player : IEntity
+    [DynamoDBTable("table-tennis-tournament")]
+    public class Player : IDynamoItem
     {
         [DynamoDBHashKey]
         public string PK { get; set; }
+        [DynamoDBRangeKey]
+        public string SK { get; set; }
 
+        [DynamoDBProperty]
+        public Guid PlayerId { get; set; }
         [DynamoDBProperty]
         public string Name { get; set; }
         [DynamoDBProperty]
@@ -63,9 +67,13 @@ namespace TTT.DomainModel.Entities
         public static Player Create(string name, int? birthYear = null, string city = null,
             Levels currentLevel = Levels.Beginner, int? height = null, int? weight = null)
         {
+            var newGuid = Guid.NewGuid();
+
             var instance = new Player
             {
-                PK = $"PLAYER#{Guid.NewGuid()}"
+                PK = $"PLAYER#{newGuid}",
+                SK = $"PLAYERDATA#{newGuid}",
+                PlayerId = newGuid
             };
 
             instance.Update(name, birthYear, city, currentLevel, height, weight);

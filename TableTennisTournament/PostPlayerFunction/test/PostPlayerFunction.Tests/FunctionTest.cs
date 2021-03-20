@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
-using Xunit;
-using Amazon.Lambda.Core;
 using Amazon.Lambda.TestUtilities;
-
-using PostPlayerFunction;
+using Xunit;
 
 namespace PostPlayerFunction.Tests
 {
@@ -29,7 +22,7 @@ namespace PostPlayerFunction.Tests
             var response = function.FunctionHandler(request, context);
 
             // Assert
-            Assert.Equal(201, response.StatusCode);
+            Assert.Equal(201, response.GetAwaiter().GetResult().StatusCode);
         }
     }
 }

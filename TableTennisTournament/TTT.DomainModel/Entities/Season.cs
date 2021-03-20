@@ -3,9 +3,10 @@ using System.Collections.Generic;
 
 namespace TTT.DomainModel.Entities
 {
-    public class Season : IEntity
+    public class Season : IDynamoItem
     {
         public string PK { get; set; }
+        public string SK { get; set; }
         public int Number { get; set; }
         public DateTime? EndDate { get; set; }
         public List<Fixture> Fixtures { get; set; }
