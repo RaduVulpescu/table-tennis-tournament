@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FunctionCommon;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
@@ -13,8 +16,20 @@ using TTT.DomainModel.Validators;
 
 namespace PostPlayerFunction
 {
-    public class Function : DynamoFunction
+    public class Function : BaseFunction
     {
+        private readonly IDynamoDBContext _dbContext;
+
+        public Function()
+        {
+            _dbContext = ServiceProvider.GetService<IDynamoDBContext>();
+        }
+
+        public Function(IDynamoDBContext dynamoDbContext)
+        {
+            _dbContext = dynamoDbContext;
+        }
+
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
             var playerDTO = JsonConvert.DeserializeObject<PlayerDTO>(request.Body);
@@ -37,7 +52,7 @@ namespace PostPlayerFunction
                 playerDTO.Weight
             );
 
-            await DbContext.SaveAsync(newPlayer);
+            await _dbContext.SaveAsync(newPlayer);
 
             return new APIGatewayHttpApiV2ProxyResponse
             {

@@ -1,28 +1,46 @@
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.TestUtilities;
+using Moq;
+using TTT.DomainModel.Entities;
 using Xunit;
 
 namespace PostPlayerFunction.Tests
 {
     public class FunctionTest
     {
+        private readonly IDynamoDBContext _dbContext;
+
+        public FunctionTest()
+        {
+            var dbContextMock = new Mock<IDynamoDBContext>();
+            dbContextMock
+                .Setup(x => x.SaveAsync(It.IsAny<Player>(), CancellationToken.None))
+                .Returns(Task.CompletedTask);
+
+            _dbContext = dbContextMock.Object;
+        }
+
         [Fact]
-        public void TestToUpperFunction()
+        public async Task TestToUpperFunction()
         {
             // Arrange
-            var function = new Function();
+            var function = new Function(_dbContext);
             var context = new TestLambdaContext();
 
             var request = new APIGatewayHttpApiV2ProxyRequest
             {
-                Body = "{\"name\":\"Radu Vulpescu\",\"city\":\"Vaslui\",\"height\":\"180\",\"weight\":\"70\",\"currentLevel\":\"3\"}"
+                Body = await File.ReadAllTextAsync("./json/player.json")
             };
 
             // Act
-            var response = function.FunctionHandler(request, context);
+            var actualResponse = await function.FunctionHandler(request, context);
 
             // Assert
-            Assert.Equal(201, response.GetAwaiter().GetResult().StatusCode);
+            Assert.Equal(201, actualResponse.StatusCode);
         }
     }
 }
