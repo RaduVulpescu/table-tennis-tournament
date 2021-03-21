@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
@@ -5,6 +6,7 @@ using FunctionCommon;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
+using TTT.DomainModel.Validators;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -16,6 +18,15 @@ namespace PutPlayerFunction
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
             var playerDTO = JsonConvert.DeserializeObject<PlayerDTO>(request.Body);
+            var validationResult = await new PlayerValidator().ValidateAsync(playerDTO);
+            if (!validationResult.IsValid)
+            {
+                return new APIGatewayHttpApiV2ProxyResponse
+                {
+                    Body = JsonConvert.SerializeObject(validationResult.Errors),
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
 
             var playerId = request.PathParameters["playerId"];
 
@@ -26,7 +37,7 @@ namespace PutPlayerFunction
                 return new APIGatewayHttpApiV2ProxyResponse
                 {
                     Body = $"Player {playerId} Not Found",
-                    StatusCode = 404
+                    StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
 
@@ -43,7 +54,7 @@ namespace PutPlayerFunction
 
             return new APIGatewayHttpApiV2ProxyResponse
             {
-                StatusCode = 204
+                StatusCode = (int)HttpStatusCode.NoContent
             };
         }
     }

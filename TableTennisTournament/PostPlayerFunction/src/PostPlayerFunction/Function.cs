@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
@@ -6,8 +7,8 @@ using FunctionCommon;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
+using TTT.DomainModel.Validators;
 
-// Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
 namespace PostPlayerFunction
@@ -17,6 +18,15 @@ namespace PostPlayerFunction
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
             var playerDTO = JsonConvert.DeserializeObject<PlayerDTO>(request.Body);
+            var validationResult = await new PlayerValidator().ValidateAsync(playerDTO);
+            if (!validationResult.IsValid)
+            {
+                return new APIGatewayHttpApiV2ProxyResponse
+                {
+                    Body = JsonConvert.SerializeObject(validationResult.Errors),
+                    StatusCode = (int)HttpStatusCode.BadRequest
+                };
+            }
 
             var newPlayer = Player.Create(
                 playerDTO.Name,
@@ -36,7 +46,7 @@ namespace PostPlayerFunction
                 {
                     { "Location", $"~/players/{newPlayer.PK.Split('#')[1]}" }
                 },
-                StatusCode = 201
+                StatusCode = (int)HttpStatusCode.Created
             };
         }
     }

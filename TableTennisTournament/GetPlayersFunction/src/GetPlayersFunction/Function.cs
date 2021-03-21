@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
@@ -8,7 +9,6 @@ using FunctionCommon;
 using Newtonsoft.Json;
 using TTT.DomainModel.Entities;
 
-// Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
 namespace GetPlayersFunction
@@ -27,7 +27,7 @@ namespace GetPlayersFunction
             return new APIGatewayHttpApiV2ProxyResponse
             {
                 Body = JsonConvert.SerializeObject(players),
-                StatusCode = 200
+                StatusCode = (int)HttpStatusCode.OK
             };
         }
     }

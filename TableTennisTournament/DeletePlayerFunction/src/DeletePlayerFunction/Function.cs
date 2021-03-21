@@ -1,10 +1,10 @@
+using System.Net;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FunctionCommon;
 using TTT.DomainModel.Entities;
 
-// Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
 namespace DeletePlayerFunction
@@ -16,13 +16,12 @@ namespace DeletePlayerFunction
             var playerId = request.PathParameters["playerId"];
 
             var player = await DbContext.LoadAsync<Player>($"PLAYER#{playerId}", $"PLAYERDATA#{playerId}");
-
             if (player is null)
             {
                 return new APIGatewayHttpApiV2ProxyResponse
                 {
                     Body = $"Player {playerId} Not Found",
-                    StatusCode = 404
+                    StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
 
@@ -30,7 +29,7 @@ namespace DeletePlayerFunction
 
             return new APIGatewayHttpApiV2ProxyResponse
             {
-                StatusCode = 204
+                StatusCode = (int)HttpStatusCode.NoContent
             };
         }
     }
