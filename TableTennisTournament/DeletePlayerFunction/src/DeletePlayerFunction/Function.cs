@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Function;
+using FunctionCommon;
 using TTT.DomainModel.Entities;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.

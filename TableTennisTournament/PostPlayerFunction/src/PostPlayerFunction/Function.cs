@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Function;
+using FunctionCommon;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;

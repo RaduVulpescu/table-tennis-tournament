@@ -1,7 +1,7 @@
 ﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 
-namespace Function
+namespace FunctionCommon
 {
     public abstract class DynamoFunction
     {

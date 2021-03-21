@@ -4,7 +4,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Function;
+using FunctionCommon;
 using Newtonsoft.Json;
 using TTT.DomainModel.Entities;
 

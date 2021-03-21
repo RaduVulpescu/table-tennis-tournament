@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
-using Function;
+using FunctionCommon;
 using Newtonsoft.Json;
 using TTT.DomainModel.Entities;
 
