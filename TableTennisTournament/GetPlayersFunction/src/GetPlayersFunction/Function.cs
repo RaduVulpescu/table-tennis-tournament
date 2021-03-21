@@ -17,7 +17,11 @@ namespace GetPlayersFunction
     {
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
-            var playersAsyncSearch = DbContext.ScanAsync<Player>(new List<ScanCondition>());
+            var playersAsyncSearch = DbContext.ScanAsync<Player>(new List<ScanCondition>
+            {
+                new ScanCondition("SK", ScanOperator.BeginsWith, "PLAYERDATA")
+            });
+
             var players = await playersAsyncSearch.GetRemainingAsync();
 
             return new APIGatewayHttpApiV2ProxyResponse

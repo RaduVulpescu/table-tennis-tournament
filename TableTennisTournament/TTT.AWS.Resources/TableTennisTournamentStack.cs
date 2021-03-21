@@ -38,7 +38,7 @@ namespace TTT.AWS.Resources
             table.Grant(putPlayerFunction, "dynamodb:DescribeTable");
             table.GrantReadWriteData(putPlayerFunction);
 
-            var deletePlayerFunction = CreateDeleteFunction("delete-player-function", "DeletePlayerFunction");
+            var deletePlayerFunction = CreateFunction("delete-player-function", "DeletePlayerFunction");
             table.Grant(deletePlayerFunction, "dynamodb:DescribeTable");
             table.GrantReadWriteData(deletePlayerFunction);
 
@@ -99,18 +99,6 @@ namespace TTT.AWS.Resources
         }
 
         private Function CreateFunction(string functionName, string functionAssembly)
-        {
-            return new Function(this, functionName, new FunctionProps
-            {
-                FunctionName = functionName,
-                Runtime = Runtime.DOTNET_CORE_3_1,
-                Handler = $"{functionAssembly}::{functionAssembly}.Function::FunctionHandler",
-                Code = Code.FromAsset($"./TableTennisTournament/{functionAssembly}/src/{functionAssembly}/bin/Release/{TargetFrameWork}/publish"),
-                Timeout = Duration.Seconds(30)
-            });
-        }
-
-        private Function CreateDeleteFunction(string functionName, string functionAssembly)
         {
             return new Function(this, functionName, new FunctionProps
             {
