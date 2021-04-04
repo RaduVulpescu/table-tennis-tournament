@@ -12,7 +12,8 @@ namespace TTT.DomainModel.Validators
             RuleFor(x => x.City).NotEmpty().MaximumLength(100);
             RuleFor(x => x.BirthYear).InclusiveBetween(1900, DateTime.Now.Year);
             RuleFor(x => x.Height).InclusiveBetween(20, 250);
-            RuleFor(x => x.Weight).InclusiveBetween(20, 200);
+            RuleFor(x => x.Weight).InclusiveBetween(10, 200);
+            RuleFor(x => x.CurrentLevel).IsInEnum();
         }
     }
 }

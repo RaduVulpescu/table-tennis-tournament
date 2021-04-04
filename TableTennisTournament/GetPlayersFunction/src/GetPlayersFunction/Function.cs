@@ -1,14 +1,11 @@
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using TTT.DomainModel.Entities;
+using TTT.Players.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
@@ -16,21 +13,21 @@ namespace GetPlayersFunction
 {
     public class Function : BaseFunction
     {
-        private readonly IDynamoDBContext _dbContext;
+        private readonly IPlayerRepository _playerRepository;
 
         public Function()
         {
-            _dbContext = ServiceProvider.GetService<IDynamoDBContext>();
+            _playerRepository = ServiceProvider.GetService<IPlayerRepository>();
+        }
+
+        public Function(IPlayerRepository playerRepository)
+        {
+            _playerRepository = playerRepository;
         }
 
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
-            var playersAsyncSearch = _dbContext.ScanAsync<Player>(new List<ScanCondition>
-            {
-                new ScanCondition("SK", ScanOperator.BeginsWith, "PLAYERDATA")
-            });
-
-            var players = await playersAsyncSearch.GetRemainingAsync();
+            var players = await _playerRepository.ListAsync();
 
             return new APIGatewayHttpApiV2ProxyResponse
             {

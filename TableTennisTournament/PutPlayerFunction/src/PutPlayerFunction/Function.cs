@@ -1,32 +1,39 @@
 using System.Net;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
-using TTT.DomainModel.Entities;
 using TTT.DomainModel.Validators;
+using TTT.Players.Repository;
 
-// Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
 namespace PutPlayerFunction
 {
     public class Function : BaseFunction
     {
-        private readonly IDynamoDBContext _dbContext;
+        private readonly IPlayerRepository _playerRepository;
 
         public Function()
         {
-            _dbContext = ServiceProvider.GetService<IDynamoDBContext>();
+            _playerRepository = ServiceProvider.GetService<IPlayerRepository>();
+        }
+
+        public Function(IPlayerRepository playerRepository)
+        {
+            _playerRepository = playerRepository;
         }
 
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
-            var playerDTO = JsonConvert.DeserializeObject<PlayerDTO>(request.Body);
+            if (!TryDeserializeBody<PlayerDTO>(request.Body, out var playerDTO, out var proxyErrorResponse))
+            {
+                return proxyErrorResponse;
+            }
+
             var validationResult = await new PlayerValidator().ValidateAsync(playerDTO);
             if (!validationResult.IsValid)
             {
@@ -39,8 +46,7 @@ namespace PutPlayerFunction
 
             var playerId = request.PathParameters["playerId"];
 
-            var player = await _dbContext.LoadAsync<Player>($"PLAYER#{playerId}", $"PLAYERDATA#{playerId}");
-
+            var player = await _playerRepository.LoadAsync($"PLAYER#{playerId}", $"PLAYERDATA#{playerId}");
             if (player is null)
             {
                 return new APIGatewayHttpApiV2ProxyResponse
@@ -52,14 +58,14 @@ namespace PutPlayerFunction
 
             player.Update(
                 playerDTO.Name,
-                playerDTO.BirthYear,
                 playerDTO.City,
-                playerDTO.CurrentLevel,
+                playerDTO.BirthYear,
                 playerDTO.Height,
-                playerDTO.Weight
+                playerDTO.Weight,
+                playerDTO.CurrentLevel
             );
 
-            await _dbContext.SaveAsync(player);
+            await _playerRepository.SaveAsync(player);
 
             return new APIGatewayHttpApiV2ProxyResponse
             {

@@ -34,12 +34,10 @@ namespace TTT.DomainModel.Entities
         [DynamoDBProperty]
         public double? BestTop4 { get; set; }
         [DynamoDBProperty]
-        public Levels CurrentLevel { get; set; }
+        public Level CurrentLevel { get; set; }
         [DynamoDBProperty]
-        public Levels? BestLevel { get; set; }
+        public Level? BestLevel { get; set; }
 
-        [DynamoDBProperty]
-        public int EliteCups { get; set; }
         [DynamoDBProperty]
         public int OpenCups { get; set; }
         [DynamoDBProperty]
@@ -48,11 +46,7 @@ namespace TTT.DomainModel.Entities
         public int IntermediateCups { get; set; }
         [DynamoDBProperty]
         public int BeginnerCups { get; set; }
-        [DynamoDBProperty]
-        public int HobbyCups { get; set; }
 
-        [DynamoDBProperty]
-        public int EliteSeasons { get; set; }
         [DynamoDBProperty]
         public int OpenSeasons { get; set; }
         [DynamoDBProperty]
@@ -61,11 +55,9 @@ namespace TTT.DomainModel.Entities
         public int IntermediateSeasons { get; set; }
         [DynamoDBProperty]
         public int BeginnerSeasons { get; set; }
-        [DynamoDBProperty]
-        public int HobbySeasons { get; set; }
 
-        public static Player Create(string name, int? birthYear = null, string city = null,
-            Levels currentLevel = Levels.Beginner, int? height = null, int? weight = null)
+        public static Player Create(string name, string city = null, int? birthYear = null, int? height = null, int? weight = null,
+            Level currentLevel = Level.Beginner)
         {
             var newGuid = Guid.NewGuid();
 
@@ -76,19 +68,19 @@ namespace TTT.DomainModel.Entities
                 PlayerId = newGuid
             };
 
-            instance.Update(name, birthYear, city, currentLevel, height, weight);
+            instance.Update(name, city, birthYear, height, weight, currentLevel);
 
             return instance;
         }
 
-        public void Update(string name, int? birthYear, string city, Levels currentLevel, int? height, int? weight)
+        public void Update(string name, string city, int? birthYear, int? height, int? weight, Level currentLevel)
         {
             Name = name;
-            BirthYear = birthYear;
             City = city;
-            CurrentLevel = currentLevel;
+            BirthYear = birthYear;
             Height = height;
             Weight = weight;
+            CurrentLevel = currentLevel;
         }
     }
 }

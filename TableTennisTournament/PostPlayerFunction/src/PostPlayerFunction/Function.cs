@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2.DataModel;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FunctionCommon;
@@ -11,6 +9,7 @@ using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
 using TTT.DomainModel.Validators;
+using TTT.Players.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
@@ -18,21 +17,25 @@ namespace PostPlayerFunction
 {
     public class Function : BaseFunction
     {
-        private readonly IDynamoDBContext _dbContext;
+        private readonly IPlayerRepository _playerRepository;
 
         public Function()
         {
-            _dbContext = ServiceProvider.GetService<IDynamoDBContext>();
+            _playerRepository = ServiceProvider.GetService<IPlayerRepository>();
         }
 
-        public Function(IDynamoDBContext dynamoDbContext)
+        public Function(IPlayerRepository playerRepository)
         {
-            _dbContext = dynamoDbContext;
+            _playerRepository = playerRepository;
         }
 
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
-            var playerDTO = JsonConvert.DeserializeObject<PlayerDTO>(request.Body);
+            if (!TryDeserializeBody<PlayerDTO>(request.Body, out var playerDTO, out var proxyErrorResponse))
+            {
+                return proxyErrorResponse;
+            }
+
             var validationResult = await new PlayerValidator().ValidateAsync(playerDTO);
             if (!validationResult.IsValid)
             {
@@ -45,14 +48,14 @@ namespace PostPlayerFunction
 
             var newPlayer = Player.Create(
                 playerDTO.Name,
-                playerDTO.BirthYear,
                 playerDTO.City,
-                playerDTO.CurrentLevel,
+                playerDTO.BirthYear,
                 playerDTO.Height,
-                playerDTO.Weight
+                playerDTO.Weight,
+                playerDTO.CurrentLevel
             );
 
-            await _dbContext.SaveAsync(newPlayer);
+            await _playerRepository.SaveAsync(newPlayer);
 
             return new APIGatewayHttpApiV2ProxyResponse
             {

@@ -1,6 +1,6 @@
 ﻿namespace TTT.DomainModel.Enums
 {
-    public enum Levels
+    public enum Level
     {
         Beginner = 2,
         Intermediate = 3,
