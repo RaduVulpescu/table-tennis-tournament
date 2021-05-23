@@ -8,7 +8,7 @@
     <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.4.0" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.0.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.1.0" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.0.8" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.0.26" />
     <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
@@ -16,6 +16,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TTT.Players.Repository\TTT.Players.Repository.csproj" />
+    <ProjectReference Include="..\TTT.Seasons.Repository\TTT.Seasons.Repository.csproj" />
+    <ProjectReference Include="..\TTT.Services\TTT.Services.csproj" />
   </ItemGroup>
 
 </Project>

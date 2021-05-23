@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Net;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.Lambda.APIGatewayEvents;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TTT.Players.Repository;
+using TTT.Seasons.Repository;
+using TTT.Services;
 
 namespace FunctionCommon
 {
@@ -21,8 +21,10 @@ namespace FunctionCommon
             ServiceProvider = serviceCollection.BuildServiceProvider();
         }
 
-        protected static bool TryDeserializeBody<T>(string body, out T @object, out APIGatewayHttpApiV2ProxyResponse proxyErrorResponse)
+        protected static bool TryDeserializeBody<T>(string body, out T @object, out string error)
         {
+            error = default;
+
             try
             {
                 @object = JsonConvert.DeserializeObject<T>(body);
@@ -30,16 +32,9 @@ namespace FunctionCommon
             catch (JsonReaderException e)
             {
                 @object = default;
-                proxyErrorResponse = new APIGatewayHttpApiV2ProxyResponse
-                {
-                    Body = $"The field '{e.Path}' could not be deserialized.",
-                    StatusCode = (int)HttpStatusCode.UnsupportedMediaType
-                };
-
+                error = $"Deserialization error: the field '{e.Path}' could not be deserialized.";
                 return false;
             }
-
-            proxyErrorResponse = null;
 
             return true;
         }
@@ -50,6 +45,9 @@ namespace FunctionCommon
             serviceCollection.AddScoped<IDynamoDBContext, DynamoDBContext>();
 
             serviceCollection.AddScoped<IPlayerRepository, PlayerRepository>();
+            serviceCollection.AddScoped<ISeasonRepository, SeasonRepository>();
+
+            serviceCollection.AddTransient<ISnsClient, SnsClient>();
         }
     }
 }

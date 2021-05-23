@@ -52,7 +52,7 @@ namespace PutPlayerFunction.Tests
 
             // Assert
             Assert.Equal((int)HttpStatusCode.UnsupportedMediaType, actualResponse.StatusCode);
-            Assert.Equal("The field 'name' could not be deserialized.", actualResponse.Body);
+            Assert.Equal("Deserialization error: the field 'name' could not be deserialized.", actualResponse.Body);
         }
 
         [Fact]

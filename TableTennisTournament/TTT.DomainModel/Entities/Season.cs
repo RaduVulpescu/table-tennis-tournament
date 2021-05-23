@@ -11,15 +11,22 @@ namespace TTT.DomainModel.Entities
         [DynamoDBRangeKey]
         public string SK { get; set; }
 
+        public Guid SeasonId { get; set; }
         public int Number { get; set; }
+        public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
-        public static Season Create(int number)
+        public static Season Create(int number, DateTime startDate)
         {
+            var newGuid = Guid.NewGuid();
+
             var instance = new Season
             {
-                PK = $"SEASON#{Guid.NewGuid()}",
-                Number = number
+                PK = $"SEASON#{newGuid}",
+                SK = $"SEASON_DATA#{newGuid}",
+                SeasonId = newGuid,
+                Number = number,
+                StartDate = startDate
             };
 
             return instance;

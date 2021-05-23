@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -29,7 +28,7 @@ namespace PostPlayerFunction.Tests
         }
 
         [Fact]
-        public async Task PostPlayerFunction_WithMalformedInput_ReturnsBadRequest()
+        public async Task PostPlayerFunction_WithMalformedInput_ReturnsUnsupportedMediaType()
         {
             // Arrange
             var (function, context) = InitializeFunctionAndTestContext();
@@ -43,7 +42,7 @@ namespace PostPlayerFunction.Tests
 
             // Assert
             Assert.Equal((int)HttpStatusCode.UnsupportedMediaType, actualResponse.StatusCode);
-            Assert.Equal("The field 'name' could not be deserialized.", actualResponse.Body);
+            Assert.Equal("Deserialization error: the field 'name' could not be deserialized.", actualResponse.Body);
         }
 
         [Fact]

@@ -31,9 +31,13 @@ namespace PostPlayerFunction
 
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
-            if (!TryDeserializeBody<PlayerDTO>(request.Body, out var playerDTO, out var proxyErrorResponse))
+            if (!TryDeserializeBody<PlayerDTO>(request.Body, out var playerDTO, out var error))
             {
-                return proxyErrorResponse;
+                return new APIGatewayHttpApiV2ProxyResponse
+                {
+                    Body = error,
+                    StatusCode = (int)HttpStatusCode.UnsupportedMediaType
+                };
             }
 
             var validationResult = await new PlayerValidator().ValidateAsync(playerDTO);
