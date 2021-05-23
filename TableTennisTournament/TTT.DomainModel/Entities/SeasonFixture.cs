@@ -13,7 +13,9 @@ namespace TTT.DomainModel.Entities
         [DynamoDBRangeKey]
         public string SK { get; set; }
 
-        public int Number { get; set; }
+        public Guid SeasonId { get; set; }
+        public Guid FixtureId { get; set; }
+        public int? Number { get; set; }
         public DateTime? Date { get; set; }
         public string Location { get; set; }
         public double QualityAverage { get; set; }
@@ -23,17 +25,23 @@ namespace TTT.DomainModel.Entities
         public List<Pyramid> Pyramids { get; set; }
         public List<FixturePlayerRank> Ranking { get; set; }
 
-        public static SeasonFixture Create(int number, FixtureType type, DateTime? date = null, string location = null)
+        public static SeasonFixture Create(Guid seasonId, FixtureType type, int? number = null, DateTime? date = null, string location = null)
         {
+            var fixtureGuid = Guid.NewGuid();
+
             var instance = new SeasonFixture
             {
+                PK = $"SEASON#{seasonId}",
+                SK = $"FIXTURE#{fixtureGuid}",
+                SeasonId = seasonId,
+                FixtureId = fixtureGuid,
                 Number = number,
                 QualityAverage = 0,
                 State = FixtureState.GroupsSelection,
                 Type = type,
-                Ranking = new List<FixturePlayerRank>(),
                 Pyramids = new List<Pyramid>(),
-                GroupMatches = new List<GroupMatch>()
+                GroupMatches = new List<GroupMatch>(),
+                Ranking = new List<FixturePlayerRank>()
             };
 
             instance.Update(date, location);

@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using TTT.Players.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-
 namespace GetPlayersFunction
 {
     public class Function : BaseFunction

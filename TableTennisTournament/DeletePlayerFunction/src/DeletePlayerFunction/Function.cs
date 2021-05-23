@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using TTT.Players.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-
 namespace DeletePlayerFunction
 {
     public class Function : BaseFunction

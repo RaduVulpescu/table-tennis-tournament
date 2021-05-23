@@ -8,9 +8,6 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleNotificationService" Version="3.7.1.11" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\..\FunctionCommon\FunctionCommon.csproj" />
     <ProjectReference Include="..\..\..\TTT.Seasons.Repository\TTT.Seasons.Repository.csproj" />
   </ItemGroup>

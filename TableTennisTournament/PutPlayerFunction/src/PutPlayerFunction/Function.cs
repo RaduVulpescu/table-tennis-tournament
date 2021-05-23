@@ -10,7 +10,6 @@ using TTT.DomainModel.Validators;
 using TTT.Players.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-
 namespace PutPlayerFunction
 {
     public class Function : BaseFunction

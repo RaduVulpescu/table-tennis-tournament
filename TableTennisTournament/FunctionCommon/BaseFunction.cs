@@ -48,6 +48,7 @@ namespace FunctionCommon
             serviceCollection.AddScoped<ISeasonRepository, SeasonRepository>();
 
             serviceCollection.AddTransient<ISnsClient, SnsClient>();
+            serviceCollection.AddTransient<ISqsClient, SqsClient>();
         }
     }
 }

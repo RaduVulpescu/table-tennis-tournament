@@ -29,6 +29,7 @@ namespace TTT.AWS.Resources
 
             var startSeasonQueue = new Queue(this, "StartSeasonQueue");
             var updatePlayersStatsQueue = new Queue(this, "UpdatePlayerStatsQueue");
+            var createFinalsQueue = new Queue(this, "CreateFinalsQueue");
 
             var endSeasonTopic = new Topic(this, "EndSeasonTopic", new TopicProps
             {
@@ -62,6 +63,12 @@ namespace TTT.AWS.Resources
             table.GrantCustomWriteData(startSeasonFunction);
             startSeasonQueue.GrantConsumeMessages(startSeasonFunction);
             startSeasonFunction.AddEventSource(new SqsEventSource(startSeasonQueue));
+            createFinalsQueue.GrantSendMessages(startSeasonFunction);
+
+            var createFinalsFunction = CreateFunction("create-finals-function", "SQSEventCreateFinalsFunction");
+            table.GrantCustomWriteData(createFinalsFunction);
+            createFinalsQueue.GrantConsumeMessages(createFinalsFunction);
+            createFinalsFunction.AddEventSource(new SqsEventSource(createFinalsQueue));
 
             var httpApi = new HttpApi(this, "ttt-http-api", new HttpApiProps
             {

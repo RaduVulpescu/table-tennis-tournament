@@ -12,7 +12,6 @@ using TTT.DomainModel.Validators;
 using TTT.Players.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-
 namespace PostPlayerFunction
 {
     public class Function : BaseFunction

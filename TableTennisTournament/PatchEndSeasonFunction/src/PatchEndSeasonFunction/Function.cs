@@ -12,7 +12,6 @@ using TTT.Seasons.Repository;
 using TTT.Services;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-
 namespace PatchEndSeasonFunction
 {
     public class Function : BaseFunction

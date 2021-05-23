@@ -35,6 +35,11 @@ namespace TTT.Seasons.Repository
         {
             return _dbContext.SaveAsync(season);
         }
+
+        public Task SaveAsync(SeasonFixture fixture)
+        {
+            return _dbContext.SaveAsync(fixture);
+        }
     }
 }
 

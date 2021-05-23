@@ -4,10 +4,12 @@ using System.Threading.Tasks;
 using Amazon.Lambda.SNSEvents;
 using Amazon.Lambda.SQSEvents;
 using Amazon.Lambda.TestUtilities;
+using Amazon.SQS.Model;
 using Moq;
 using Newtonsoft.Json;
 using TTT.DomainModel.Entities;
 using TTT.Seasons.Repository;
+using TTT.Services;
 using Xunit;
 
 namespace SQSEventStartSeasonFunction.Tests
@@ -15,16 +17,23 @@ namespace SQSEventStartSeasonFunction.Tests
     public class FunctionTest
     {
         private readonly ISeasonRepository _seasonRepository;
+        private readonly ISqsClient _sqsClient;
 
         public FunctionTest()
         {
             var seasonRepository = new Mock<ISeasonRepository>();
+            var sqsClient = new Mock<ISqsClient>();
 
             seasonRepository
                 .Setup(x => x.SaveAsync(It.IsAny<Season>()))
                 .Returns(Task.CompletedTask);
 
+            sqsClient
+                .Setup(x => x.SendMessageAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new SendMessageResponse());
+
             _seasonRepository = seasonRepository.Object;
+            _sqsClient = sqsClient.Object;
         }
 
         [Fact]
@@ -120,7 +129,7 @@ namespace SQSEventStartSeasonFunction.Tests
 
         private Tuple<Function, TestLambdaContext, TestLambdaLogger> InitializeFunctionAndTestContext()
         {
-            var function = new Function(_seasonRepository);
+            var function = new Function(_seasonRepository, _sqsClient);
             var logger = new TestLambdaLogger();
             var context = new TestLambdaContext
             {
