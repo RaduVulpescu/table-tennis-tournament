@@ -59,6 +59,7 @@ namespace TTT.AWS.Resources
             endSeasonTopic.GrantPublish(endSeasonFunction);
 
             var startSeasonFunction = CreateFunction("start-season-function", "SQSEventStartSeasonFunction");
+            table.GrantCustomWriteData(startSeasonFunction);
             startSeasonQueue.GrantConsumeMessages(startSeasonFunction);
             startSeasonFunction.AddEventSource(new SqsEventSource(startSeasonQueue));
 

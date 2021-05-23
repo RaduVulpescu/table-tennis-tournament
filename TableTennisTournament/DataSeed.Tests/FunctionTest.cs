@@ -11,7 +11,7 @@ namespace DataSeed.Tests
 {
     public class FunctionTest
     {
-        [Fact]
+        //[Fact]
         public async Task Seed_Season()
         {
             // Arrange

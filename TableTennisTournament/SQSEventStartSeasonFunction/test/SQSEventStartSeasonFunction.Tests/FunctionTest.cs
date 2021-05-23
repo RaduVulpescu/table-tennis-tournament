@@ -91,7 +91,7 @@ namespace SQSEventStartSeasonFunction.Tests
         }
 
         [Fact]
-        public async Task SQSEventStartSeasonFunction_WithNoEndDate_LogsE()
+        public async Task SQSEventStartSeasonFunction_WithNoEndDate_LogsErrorMessage()
         {
             // Arrange
             var (function, context, logger) = InitializeFunctionAndTestContext();
