@@ -43,8 +43,8 @@ namespace TTT.DomainModel.Entities
 
             var instance = new Player
             {
-                PK = CreatePK(newGuid),
-                SK = CreateSK(newGuid),
+                PK = CreatePK(newGuid.ToString()),
+                SK = CreateSK(newGuid.ToString()),
                 PlayerId = newGuid
             };
 
@@ -63,12 +63,12 @@ namespace TTT.DomainModel.Entities
             CurrentLevel = currentLevel;
         }
 
-        public static string CreatePK(Guid playerId)
+        public static string CreatePK(string playerId)
         {
             return $"{Constants.PlayerPrefix}#{playerId}";
         }
 
-        public static string CreateSK(Guid playerId)
+        public static string CreateSK(string playerId)
         {
             return $"{Constants.PlayerDataPrefix}#{playerId}";
         }

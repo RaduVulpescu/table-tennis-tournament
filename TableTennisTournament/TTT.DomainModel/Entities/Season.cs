@@ -22,8 +22,8 @@ namespace TTT.DomainModel.Entities
 
             var instance = new Season
             {
-                PK = CreatePK(newGuid),
-                SK = CreateSK(newGuid),
+                PK = CreatePK(newGuid.ToString()),
+                SK = CreateSK(newGuid.ToString()),
                 SeasonId = newGuid,
                 Number = number,
                 StartDate = startDate
@@ -32,12 +32,12 @@ namespace TTT.DomainModel.Entities
             return instance;
         }
 
-        public static string CreatePK(Guid seasonId)
+        public static string CreatePK(string seasonId)
         {
             return $"{Constants.SeasonPrefix}#{seasonId}";
         }
 
-        public static string CreateSK(Guid seasonId)
+        public static string CreateSK(string seasonId)
         {
             return $"{Constants.SeasonDataPrefix}#{seasonId}";
         }

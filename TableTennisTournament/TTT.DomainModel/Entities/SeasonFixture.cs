@@ -31,8 +31,8 @@ namespace TTT.DomainModel.Entities
 
             var instance = new SeasonFixture
             {
-                PK = CreatePK(seasonId),
-                SK = CreateSK(fixtureId),
+                PK = CreatePK(seasonId.ToString()),
+                SK = CreateSK(fixtureId.ToString()),
                 SeasonId = seasonId,
                 FixtureId = fixtureId,
                 Number = number,
@@ -55,12 +55,12 @@ namespace TTT.DomainModel.Entities
             Location = location;
         }
 
-        public static string CreatePK(Guid seasonId)
+        public static string CreatePK(string seasonId)
         {
             return $"{Constants.SeasonPrefix}#{seasonId}";
         }
 
-        public static string CreateSK(Guid fixtureId)
+        public static string CreateSK(string fixtureId)
         {
             return $"{Constants.FixturePrefix}#{fixtureId}";
         }

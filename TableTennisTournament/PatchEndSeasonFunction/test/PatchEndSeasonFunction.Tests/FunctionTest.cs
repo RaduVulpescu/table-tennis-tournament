@@ -23,7 +23,7 @@ namespace PatchEndSeasonFunction.Tests
         private readonly Function _sutFunction;
         private readonly TestLambdaContext _testContext;
 
-        private readonly Guid _existingSeasonId = new Guid("4b2e2992-0dec-40ee-ac89-e2d5d35d363b");
+        private const string ExistingSeasonId = "4b2e2992-0dec-40ee-ac89-e2d5d35d363b";
         private const string SeasonIdQueryParamKey = "seasonId";
 
         public FunctionTest()
@@ -40,7 +40,7 @@ namespace PatchEndSeasonFunction.Tests
                 .ReturnsAsync((Season)null);
 
             _seasonRepositoryMock
-                .Setup(x => x.LoadAsync(Season.CreatePK(_existingSeasonId), Season.CreateSK(_existingSeasonId)))
+                .Setup(x => x.LoadAsync(Season.CreatePK(ExistingSeasonId), Season.CreateSK(ExistingSeasonId)))
                 .ReturnsAsync(new Season());
 
             _snsClientMock
@@ -99,11 +99,11 @@ namespace PatchEndSeasonFunction.Tests
             {
                 EndDate = DateTime.Now.AddDays(-1)
             };
-            var nonExistingSeasonId = Guid.NewGuid();
+            var nonExistingSeasonId = Guid.NewGuid().ToString();
             var request = new APIGatewayHttpApiV2ProxyRequest
             {
                 Body = JsonConvert.SerializeObject(seasonPatch),
-                PathParameters = new Dictionary<string, string> { { SeasonIdQueryParamKey, nonExistingSeasonId.ToString() } }
+                PathParameters = new Dictionary<string, string> { { SeasonIdQueryParamKey, nonExistingSeasonId } }
             };
 
             // Act
@@ -127,7 +127,7 @@ namespace PatchEndSeasonFunction.Tests
             var request = new APIGatewayHttpApiV2ProxyRequest
             {
                 Body = JsonConvert.SerializeObject(seasonPatch),
-                PathParameters = new Dictionary<string, string> { { SeasonIdQueryParamKey, _existingSeasonId.ToString() } }
+                PathParameters = new Dictionary<string, string> { { SeasonIdQueryParamKey, ExistingSeasonId } }
             };
 
             // Act

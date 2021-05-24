@@ -7,6 +7,7 @@ using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
+using TTT.DomainModel.Entities;
 using TTT.DomainModel.Validators;
 using TTT.Seasons.Repository;
 using TTT.Services;
@@ -54,7 +55,7 @@ namespace PatchEndSeasonFunction
 
             var seasonId = request.PathParameters["seasonId"];
 
-            var currentSeason = await _seasonRepository.LoadAsync($"SEASON#{seasonId}", $"SEASON_DATA#{seasonId}");
+            var currentSeason = await _seasonRepository.LoadAsync(Season.CreatePK(seasonId), Season.CreateSK(seasonId));
             if (currentSeason is null)
             {
                 return new APIGatewayHttpApiV2ProxyResponse

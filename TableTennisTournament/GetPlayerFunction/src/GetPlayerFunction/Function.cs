@@ -5,6 +5,7 @@ using Amazon.Lambda.Core;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using TTT.DomainModel.Entities;
 using TTT.Players.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -28,7 +29,7 @@ namespace GetPlayerFunction
         {
             var playerId = request.PathParameters["playerId"];
 
-            var player = await _playerRepository.LoadAsync($"PLAYER#{playerId}", $"PLAYERDATA#{playerId}");
+            var player = await _playerRepository.LoadAsync(Player.CreatePK(playerId), Player.CreateSK(playerId));
 
             return player is null
                 ? new APIGatewayHttpApiV2ProxyResponse

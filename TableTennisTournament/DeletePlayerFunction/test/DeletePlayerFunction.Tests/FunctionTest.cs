@@ -15,7 +15,7 @@ namespace DeletePlayerFunction.Tests
     {
         private readonly IPlayerRepository _playerRepository;
 
-        private const string ExistingPlayer = "4b2e2992-0dec-40ee-ac89-e2d5d35d363b";
+        private const string ExistingPlayerId = "4b2e2992-0dec-40ee-ac89-e2d5d35d363b";
 
         public FunctionTest()
         {
@@ -26,7 +26,7 @@ namespace DeletePlayerFunction.Tests
                 .ReturnsAsync((Player)null);
 
             playerRepositoryMock
-                .Setup(x => x.LoadAsync($"PLAYER#{ExistingPlayer}", $"PLAYERDATA#{ExistingPlayer}"))
+                .Setup(x => x.LoadAsync(Player.CreatePK(ExistingPlayerId), Player.CreateSK(ExistingPlayerId)))
                 .ReturnsAsync(new Player());
 
             playerRepositoryMock
@@ -60,7 +60,7 @@ namespace DeletePlayerFunction.Tests
             var (function, context) = InitializeFunctionAndTestContext();
             var request = new APIGatewayHttpApiV2ProxyRequest
             {
-                PathParameters = new Dictionary<string, string> { { "playerId", ExistingPlayer } }
+                PathParameters = new Dictionary<string, string> { { "playerId", ExistingPlayerId } }
             };
 
             // Act

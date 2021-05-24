@@ -6,6 +6,7 @@ using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
+using TTT.DomainModel.Entities;
 using TTT.DomainModel.Validators;
 using TTT.Players.Repository;
 
@@ -49,7 +50,7 @@ namespace PutPlayerFunction
 
             var playerId = request.PathParameters["playerId"];
 
-            var player = await _playerRepository.LoadAsync($"PLAYER#{playerId}", $"PLAYERDATA#{playerId}");
+            var player = await _playerRepository.LoadAsync(Player.CreatePK(playerId), Player.CreateSK(playerId));
             if (player is null)
             {
                 return new APIGatewayHttpApiV2ProxyResponse

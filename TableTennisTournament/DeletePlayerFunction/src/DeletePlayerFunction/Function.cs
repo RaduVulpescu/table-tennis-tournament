@@ -4,6 +4,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
+using TTT.DomainModel.Entities;
 using TTT.Players.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -26,8 +27,8 @@ namespace DeletePlayerFunction
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
             var playerId = request.PathParameters["playerId"];
-
-            var player = await _playerRepository.LoadAsync($"PLAYER#{playerId}", $"PLAYERDATA#{playerId}");
+            
+            var player = await _playerRepository.LoadAsync(Player.CreatePK(playerId), Player.CreateSK(playerId));
             if (player is null)
             {
                 return new APIGatewayHttpApiV2ProxyResponse

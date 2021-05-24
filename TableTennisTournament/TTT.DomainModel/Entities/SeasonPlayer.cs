@@ -25,12 +25,12 @@ namespace TTT.DomainModel.Entities
         public double Score4 { get; set; }
         public double Shape { get; set; }
 
-        public static string CreatePK(Guid seasonId)
+        public static string CreatePK(string seasonId)
         {
             return $"{Constants.SeasonPrefix}#{seasonId}";
         }
 
-        public static string CreateSK(Guid playerId)
+        public static string CreateSK(string playerId)
         {
             return $"{Constants.PlayerPrefix}#{playerId}";
         }

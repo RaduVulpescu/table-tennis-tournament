@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using TTT.DomainModel;
 using TTT.DomainModel.Entities;
 
 namespace TTT.Players.Repository
@@ -19,7 +20,7 @@ namespace TTT.Players.Repository
         {
             var playersAsyncSearch = _dbContext.ScanAsync<Player>(new List<ScanCondition>
             {
-                new ScanCondition("SK", ScanOperator.BeginsWith, "PLAYERDATA#")
+                new ScanCondition("SK", ScanOperator.BeginsWith, $"{Constants.PlayerDataPrefix}#")
             });
 
             return playersAsyncSearch.GetRemainingAsync();
