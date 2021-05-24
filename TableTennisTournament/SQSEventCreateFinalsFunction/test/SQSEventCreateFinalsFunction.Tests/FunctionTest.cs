@@ -13,17 +13,15 @@ namespace SQSEventCreateFinalsFunction.Tests
 {
     public class FunctionTest
     {
-        private readonly ISeasonRepository _seasonRepository;
+        private readonly Mock<ISeasonRepository> _seasonRepositoryMock;
 
         public FunctionTest()
         {
-            var seasonRepository = new Mock<ISeasonRepository>();
+            _seasonRepositoryMock = new Mock<ISeasonRepository>();
 
-            seasonRepository
-                .Setup(x => x.SaveAsync(It.IsAny<Season>()))
+            _seasonRepositoryMock
+                .Setup(x => x.SaveAsync(It.IsAny<SeasonFixture>()))
                 .Returns(Task.CompletedTask);
-
-            _seasonRepository = seasonRepository.Object;
         }
 
         [Fact]
@@ -50,17 +48,17 @@ namespace SQSEventCreateFinalsFunction.Tests
                 }
             };
 
-
             // Act
             await function.FunctionHandler(sqsEvent, context);
 
             // Assert
+            _seasonRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<SeasonFixture>()), Times.Exactly(4));
             Assert.Contains("Finished processing message to create all finals.", logger.Buffer.ToString());
         }
 
         private Tuple<Function, TestLambdaContext, TestLambdaLogger> InitializeFunctionAndTestContext()
         {
-            var function = new Function(_seasonRepository);
+            var function = new Function(_seasonRepositoryMock.Object);
             var logger = new TestLambdaLogger();
             var context = new TestLambdaContext
             {

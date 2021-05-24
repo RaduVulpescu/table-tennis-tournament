@@ -6,6 +6,7 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.TestUtilities;
 using Moq;
 using Newtonsoft.Json;
+using TTT.DomainModel;
 using TTT.DomainModel.Entities;
 using TTT.Players.Repository;
 using Xunit;
@@ -14,33 +15,37 @@ namespace PostPlayerFunction.Tests
 {
     public class FunctionTest
     {
-        private readonly IPlayerRepository _playerRepository;
+        private readonly Mock<IPlayerRepository> _playerRepositoryMock;
+        private readonly Function _sutFunction;
+        private readonly TestLambdaContext _testContext;
 
         public FunctionTest()
         {
-            var playerRepositoryMock = new Mock<IPlayerRepository>();
+            _playerRepositoryMock = new Mock<IPlayerRepository>();
 
-            playerRepositoryMock
+            _playerRepositoryMock
                 .Setup(x => x.SaveAsync(It.IsAny<Player>()))
                 .Returns(Task.CompletedTask);
 
-            _playerRepository = playerRepositoryMock.Object;
+            _sutFunction = new Function(_playerRepositoryMock.Object);
+            _testContext = new TestLambdaContext();
         }
 
         [Fact]
         public async Task PostPlayerFunction_WithMalformedInput_ReturnsUnsupportedMediaType()
         {
             // Arrange
-            var (function, context) = InitializeFunctionAndTestContext();
             var request = new APIGatewayHttpApiV2ProxyRequest
             {
                 Body = await File.ReadAllTextAsync("./json/malformed-player.json")
             };
 
             // Act
-            var actualResponse = await function.FunctionHandler(request, context);
+            var actualResponse = await _sutFunction.FunctionHandler(request, _testContext);
 
             // Assert
+            _playerRepositoryMock.VerifyNoOtherCalls();
+
             Assert.Equal((int)HttpStatusCode.UnsupportedMediaType, actualResponse.StatusCode);
             Assert.Equal("Deserialization error: the field 'name' could not be deserialized.", actualResponse.Body);
         }
@@ -49,16 +54,17 @@ namespace PostPlayerFunction.Tests
         public async Task PostPlayerFunction_WithInvalidInput_ReturnsBadRequest()
         {
             // Arrange
-            var (function, context) = InitializeFunctionAndTestContext();
             var request = new APIGatewayHttpApiV2ProxyRequest
             {
                 Body = await File.ReadAllTextAsync("./json/invalid-player.json")
             };
 
             // Act
-            var actualResponse = await function.FunctionHandler(request, context);
+            var actualResponse = await _sutFunction.FunctionHandler(request, _testContext);
 
             // Assert
+            _playerRepositoryMock.VerifyNoOtherCalls();
+
             Assert.Equal((int)HttpStatusCode.BadRequest, actualResponse.StatusCode);
         }
 
@@ -66,7 +72,6 @@ namespace PostPlayerFunction.Tests
         public async Task PostPlayerFunction_WithValidPlayer_ReturnsCreated()
         {
             // Arrange
-            var (function, context) = InitializeFunctionAndTestContext();
             var playerJson = await File.ReadAllTextAsync("./json/player.json");
             var request = new APIGatewayHttpApiV2ProxyRequest
             {
@@ -74,15 +79,18 @@ namespace PostPlayerFunction.Tests
             };
 
             // Act
-            var actualResponse = await function.FunctionHandler(request, context);
+            var actualResponse = await _sutFunction.FunctionHandler(request, _testContext);
             var expectedPlayer = JsonConvert.DeserializeObject<Player>(playerJson);
             var actualPlayer = JsonConvert.DeserializeObject<Player>(actualResponse.Body);
 
             // Assert
+            _playerRepositoryMock.Verify(x => x.SaveAsync(It.IsAny<Player>()), Times.Once);
+            _playerRepositoryMock.VerifyNoOtherCalls();
+
             Assert.Equal((int)HttpStatusCode.Created, actualResponse.StatusCode);
 
-            Assert.StartsWith("PLAYER#", actualPlayer!.PK);
-            Assert.StartsWith("PLAYERDATA#", actualPlayer!.SK);
+            Assert.StartsWith($"{Constants.PlayerPrefix}#", actualPlayer!.PK);
+            Assert.StartsWith($"{Constants.PlayerDataPrefix}#", actualPlayer!.SK);
             Assert.NotEqual(Guid.Empty, actualPlayer!.PlayerId);
 
             Assert.Equal(expectedPlayer!.Name, actualPlayer!.Name);
@@ -105,14 +113,6 @@ namespace PostPlayerFunction.Tests
             Assert.Equal(0, actualPlayer!.AdvancedSeasons);
             Assert.Equal(0, actualPlayer!.IntermediateSeasons);
             Assert.Equal(0, actualPlayer!.BeginnerSeasons);
-        }
-
-        private Tuple<Function, TestLambdaContext> InitializeFunctionAndTestContext()
-        {
-            var function = new Function(_playerRepository);
-            var context = new TestLambdaContext();
-
-            return new Tuple<Function, TestLambdaContext>(function, context);
         }
     }
 }

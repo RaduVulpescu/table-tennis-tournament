@@ -10,5 +10,6 @@ namespace TTT.Seasons.Repository
         public Task<Season> LoadAsync(string partitionKey, string sortKey);
         public Task SaveAsync(Season season);
         public Task SaveAsync(SeasonFixture fixture);
+        public Task SaveAsync(SeasonPlayer player);
     }
 }

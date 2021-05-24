@@ -27,14 +27,14 @@ namespace TTT.DomainModel.Entities
 
         public static SeasonFixture Create(Guid seasonId, FixtureType type, int? number = null, DateTime? date = null, string location = null)
         {
-            var fixtureGuid = Guid.NewGuid();
+            var fixtureId = Guid.NewGuid();
 
             var instance = new SeasonFixture
             {
-                PK = $"SEASON#{seasonId}",
-                SK = $"FIXTURE#{fixtureGuid}",
+                PK = CreatePK(seasonId),
+                SK = CreateSK(fixtureId),
                 SeasonId = seasonId,
-                FixtureId = fixtureGuid,
+                FixtureId = fixtureId,
                 Number = number,
                 QualityAverage = 0,
                 State = FixtureState.GroupsSelection,
@@ -53,6 +53,16 @@ namespace TTT.DomainModel.Entities
         {
             Date = date;
             Location = location;
+        }
+
+        public static string CreatePK(Guid seasonId)
+        {
+            return $"{Constants.SeasonPrefix}#{seasonId}";
+        }
+
+        public static string CreateSK(Guid fixtureId)
+        {
+            return $"{Constants.FixturePrefix}#{fixtureId}";
         }
     }
 

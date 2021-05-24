@@ -22,14 +22,24 @@ namespace TTT.DomainModel.Entities
 
             var instance = new Season
             {
-                PK = $"SEASON#{newGuid}",
-                SK = $"SEASON_DATA#{newGuid}",
+                PK = CreatePK(newGuid),
+                SK = CreateSK(newGuid),
                 SeasonId = newGuid,
                 Number = number,
                 StartDate = startDate
             };
 
             return instance;
+        }
+
+        public static string CreatePK(Guid seasonId)
+        {
+            return $"{Constants.SeasonPrefix}#{seasonId}";
+        }
+
+        public static string CreateSK(Guid seasonId)
+        {
+            return $"{Constants.SeasonDataPrefix}#{seasonId}";
         }
     }
 }

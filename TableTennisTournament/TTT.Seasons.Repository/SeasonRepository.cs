@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using TTT.DomainModel;
 using TTT.DomainModel.Entities;
 
 namespace TTT.Seasons.Repository
@@ -19,7 +20,7 @@ namespace TTT.Seasons.Repository
         {
             var seasonsAsyncSearch = _dbContext.ScanAsync<Season>(new List<ScanCondition>
             {
-                new ScanCondition("SK", ScanOperator.BeginsWith, "SEASON_DATA#")
+                new ScanCondition("SK", ScanOperator.BeginsWith, $"{Constants.SeasonDataPrefix}#")
             });
 
             return seasonsAsyncSearch.GetRemainingAsync();
@@ -30,7 +31,6 @@ namespace TTT.Seasons.Repository
             return _dbContext.LoadAsync<Season>(partitionKey, sortKey);
         }
 
-
         public Task SaveAsync(Season season)
         {
             return _dbContext.SaveAsync(season);
@@ -39,6 +39,11 @@ namespace TTT.Seasons.Repository
         public Task SaveAsync(SeasonFixture fixture)
         {
             return _dbContext.SaveAsync(fixture);
+        }
+
+        public Task SaveAsync(SeasonPlayer player)
+        {
+            return _dbContext.SaveAsync(player);
         }
     }
 }

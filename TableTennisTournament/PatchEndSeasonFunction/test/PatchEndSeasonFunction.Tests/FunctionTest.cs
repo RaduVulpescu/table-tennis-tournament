@@ -18,48 +18,50 @@ namespace PatchEndSeasonFunction.Tests
 {
     public class FunctionTest
     {
-        private const string ExistingSeason = "4b2e2992-0dec-40ee-ac89-e2d5d35d363b";
-        private readonly ISeasonRepository _seasonRepository;
-        private readonly ISnsClient _snsClient;
+        private readonly Mock<ISeasonRepository> _seasonRepositoryMock;
+        private readonly Mock<ISnsClient> _snsClientMock;
+        private readonly Function _sutFunction;
+        private readonly TestLambdaContext _testContext;
+
+        private readonly Guid _existingSeasonId = new Guid("4b2e2992-0dec-40ee-ac89-e2d5d35d363b");
+        private const string SeasonIdQueryParamKey = "seasonId";
 
         public FunctionTest()
         {
-            var seasonRepositoryMock = new Mock<ISeasonRepository>();
-            var snsClientMock = new Mock<ISnsClient>();
+            _seasonRepositoryMock = new Mock<ISeasonRepository>();
+            _snsClientMock = new Mock<ISnsClient>();
 
-            seasonRepositoryMock
+            _seasonRepositoryMock
                 .Setup(x => x.SaveAsync(It.IsAny<Season>()))
                 .Returns(Task.CompletedTask);
 
-            seasonRepositoryMock
+            _seasonRepositoryMock
                 .Setup(x => x.LoadAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync((Season)null);
 
-            seasonRepositoryMock
-                .Setup(x => x.LoadAsync($"SEASON#{ExistingSeason}", $"SEASON_DATA#{ExistingSeason}"))
+            _seasonRepositoryMock
+                .Setup(x => x.LoadAsync(Season.CreatePK(_existingSeasonId), Season.CreateSK(_existingSeasonId)))
                 .ReturnsAsync(new Season());
 
-            _seasonRepository = seasonRepositoryMock.Object;
-
-            snsClientMock
+            _snsClientMock
                 .Setup(x => x.PublishAsync(It.IsAny<PublishRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PublishResponse());
 
-            _snsClient = snsClientMock.Object;
+            _sutFunction = new Function(_seasonRepositoryMock.Object, _snsClientMock.Object);
+            _testContext = new TestLambdaContext();
         }
 
         [Fact]
         public async Task PatchEndSeasonFunction_WithMalformedInput_ReturnsUnsupportedMediaType()
         {
             // Arrange
-            var (function, context) = InitializeFunctionAndTestContext();
             var request = new APIGatewayHttpApiV2ProxyRequest
             {
                 Body = "not a valid json"
             };
 
             // Act
-            var actualResponse = await function.FunctionHandler(request, context);
+            var actualResponse = await _sutFunction.FunctionHandler(request, _testContext);
 
             // Assert
             Assert.Equal((int)HttpStatusCode.UnsupportedMediaType, actualResponse.StatusCode);
@@ -70,7 +72,6 @@ namespace PatchEndSeasonFunction.Tests
         public async Task PatchEndSeasonFunction_WithFutureEndDate_ReturnsBadRequest()
         {
             // Arrange
-            var (function, context) = InitializeFunctionAndTestContext();
             var seasonPatch = new SeasonsPatchDTO
             {
                 EndDate = DateTime.Now.AddMonths(1)
@@ -82,9 +83,10 @@ namespace PatchEndSeasonFunction.Tests
             };
 
             // Act
-            var actualResponse = await function.FunctionHandler(request, context);
+            var actualResponse = await _sutFunction.FunctionHandler(request, _testContext);
 
             // Assert
+            _seasonRepositoryMock.VerifyNoOtherCalls();
             Assert.Equal((int)HttpStatusCode.BadRequest, actualResponse.StatusCode);
             Assert.Contains("'End Date' must be less than or equal to", actualResponse.Body);
         }
@@ -93,22 +95,23 @@ namespace PatchEndSeasonFunction.Tests
         public async Task PatchEndSeasonFunction_WithNonExistingSeasonId_ReturnsNotFound()
         {
             // Arrange
-            var (function, context) = InitializeFunctionAndTestContext();
             var seasonPatch = new SeasonsPatchDTO
             {
                 EndDate = DateTime.Now.AddDays(-1)
             };
-
+            var nonExistingSeasonId = Guid.NewGuid();
             var request = new APIGatewayHttpApiV2ProxyRequest
             {
                 Body = JsonConvert.SerializeObject(seasonPatch),
-                PathParameters = new Dictionary<string, string> { { "seasonId", Guid.NewGuid().ToString() } }
+                PathParameters = new Dictionary<string, string> { { SeasonIdQueryParamKey, nonExistingSeasonId.ToString() } }
             };
 
             // Act
-            var actualResponse = await function.FunctionHandler(request, context);
+            var actualResponse = await _sutFunction.FunctionHandler(request, _testContext);
 
             // Assert
+            _seasonRepositoryMock.Verify(
+                x => x.LoadAsync(Season.CreatePK(nonExistingSeasonId), Season.CreateSK(nonExistingSeasonId)), Times.Once);
             Assert.Equal((int)HttpStatusCode.NotFound, actualResponse.StatusCode);
         }
 
@@ -116,7 +119,6 @@ namespace PatchEndSeasonFunction.Tests
         public async Task PatchEndSeasonFunction_WithValidInput_ReturnsNoContent()
         {
             // Arrange
-            var (function, context) = InitializeFunctionAndTestContext();
             var seasonPatch = new SeasonsPatchDTO
             {
                 EndDate = DateTime.Now.AddDays(-1)
@@ -125,22 +127,15 @@ namespace PatchEndSeasonFunction.Tests
             var request = new APIGatewayHttpApiV2ProxyRequest
             {
                 Body = JsonConvert.SerializeObject(seasonPatch),
-                PathParameters = new Dictionary<string, string> { { "seasonId", ExistingSeason } }
+                PathParameters = new Dictionary<string, string> { { SeasonIdQueryParamKey, _existingSeasonId.ToString() } }
             };
 
             // Act
-            var actualResponse = await function.FunctionHandler(request, context);
+            var actualResponse = await _sutFunction.FunctionHandler(request, _testContext);
 
             // Assert
+            _snsClientMock.Verify(x => x.PublishAsync(It.IsAny<PublishRequest>(), CancellationToken.None), Times.Once);
             Assert.Equal((int)HttpStatusCode.NoContent, actualResponse.StatusCode);
-        }
-
-        private Tuple<Function, TestLambdaContext> InitializeFunctionAndTestContext()
-        {
-            var function = new Function(_seasonRepository, _snsClient);
-            var context = new TestLambdaContext();
-
-            return new Tuple<Function, TestLambdaContext>(function, context);
         }
     }
 }

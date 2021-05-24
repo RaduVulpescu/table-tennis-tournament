@@ -28,14 +28,14 @@ namespace SQSEventCreateFinalsFunction
         {
             foreach (var sqsMessage in ev.Records)
             {
+                context.Logger.LogLine($"Processing message to create the finals: {sqsMessage.Body}.");
                 await ProcessMessageAsync(sqsMessage, context);
+                context.Logger.LogLine("Finished processing message to create all finals.");
             }
         }
 
         private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
         {
-            context.Logger.LogLine($"Processing message to create the finals: {message.Body}.");
-
             if (!TryDeserializeBody<Season>(message.Body, out var newCreatedSeason, out var error))
             {
                 context.Logger.LogLine(error);
@@ -56,8 +56,6 @@ namespace SQSEventCreateFinalsFunction
             };
 
             await Task.WhenAll(createFinalsTasks);
-
-            context.Logger.LogLine("Finished processing message to create all finals.");
         }
     }
 }
