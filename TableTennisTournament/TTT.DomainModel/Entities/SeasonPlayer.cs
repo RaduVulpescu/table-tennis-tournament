@@ -19,6 +19,7 @@ namespace TTT.DomainModel.Entities
         public string Name { get; set; }
         public Level Level { get; set; }
         public double Quality { get; set; }
+        public double Top4 { get; set; }
         public double Score1 { get; set; }
         public double Score2 { get; set; }
         public double Score3 { get; set; }

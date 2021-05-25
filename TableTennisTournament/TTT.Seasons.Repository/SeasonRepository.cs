@@ -16,12 +16,23 @@ namespace TTT.Seasons.Repository
             _dbContext = dbContext;
         }
 
-        public Task<List<Season>> ListAsync()
+        public Task<List<Season>> ListSeasonsAsync()
         {
             var seasonsAsyncSearch = _dbContext.ScanAsync<Season>(new List<ScanCondition>
             {
                 new ScanCondition("SK", ScanOperator.BeginsWith, $"{Constants.SeasonDataPrefix}#")
             });
+
+            return seasonsAsyncSearch.GetRemainingAsync();
+        }
+
+        public Task<List<SeasonPlayer>> ListSeasonPlayersAsync(string seasonId)
+        {
+            var seasonsAsyncSearch = _dbContext.QueryAsync<SeasonPlayer>(
+                SeasonPlayer.CreatePK(seasonId),
+                QueryOperator.BeginsWith,
+                new[] { $"{Constants.PlayerPrefix}#" }
+            );
 
             return seasonsAsyncSearch.GetRemainingAsync();
         }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -47,6 +46,13 @@ namespace DataSeed
                 },
                 StatusCode = (int)HttpStatusCode.Created
             };
+        }
+
+        public async Task<int> CreateSeasonPlayerAsync(SeasonPlayer seasonPlayer)
+        {
+            await _seasonRepository.SaveAsync(seasonPlayer);
+
+            return (int)HttpStatusCode.Created;
         }
     }
 }

@@ -70,6 +70,12 @@ namespace TTT.AWS.Resources
             createFinalsQueue.GrantConsumeMessages(createFinalsFunction);
             createFinalsFunction.AddEventSource(new SqsEventSource(createFinalsQueue));
 
+            var getSeasonsFunction = CreateFunction("get-seasons-function", "GetSeasonsFunction");
+            table.GrantCustomReadData(getSeasonsFunction);
+
+            var getSeasonPlayersFunction = CreateFunction("get-seasons-players-function", "GetSeasonPlayersFunction");
+            table.GrantCustomReadData(getSeasonPlayersFunction);
+
             var httpApi = new HttpApi(this, "ttt-http-api", new HttpApiProps
             {
                 ApiName = "ttt-api"
@@ -132,6 +138,26 @@ namespace TTT.AWS.Resources
                 Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
                 {
                     Handler = endSeasonFunction
+                })
+            });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/seasons",
+                Methods = new[] { HttpMethod.GET },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = getSeasonsFunction
+                })
+            });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/seasons/{seasonId}/players",
+                Methods = new[] { HttpMethod.GET },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = getSeasonPlayersFunction
                 })
             });
         }
