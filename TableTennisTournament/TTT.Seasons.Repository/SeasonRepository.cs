@@ -37,9 +37,20 @@ namespace TTT.Seasons.Repository
             return seasonsAsyncSearch.GetRemainingAsync();
         }
 
-        public Task<Season> LoadAsync(string partitionKey, string sortKey)
+        public Task<Season> LoadSeasonAsync(string seasonId)
         {
-            return _dbContext.LoadAsync<Season>(partitionKey, sortKey);
+            return _dbContext.LoadAsync<Season>(Season.CreatePK(seasonId), Season.CreateSK(seasonId));
+        }
+
+        public Task<List<SeasonFixture>> LoadFixturesAsync(string partitionKey)
+        {
+            var seasonsAsyncSearch = _dbContext.QueryAsync<SeasonFixture>(
+                SeasonPlayer.CreatePK(partitionKey),
+                QueryOperator.BeginsWith,
+                new[] { $"{Constants.FixturePrefix}#" }
+            );
+
+            return seasonsAsyncSearch.GetRemainingAsync();
         }
 
         public Task SaveAsync(Season season)

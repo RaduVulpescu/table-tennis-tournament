@@ -21,6 +21,7 @@ namespace TTT.DomainModel.Entities
         public double QualityAverage { get; set; }
         public FixtureState State { get; set; }
         public FixtureType Type { get; set; }
+        public List<FixturePlayer> Players { get; set; }
         public List<GroupMatch> GroupMatches { get; set; }
         public List<Pyramid> Pyramids { get; set; }
         public List<FixturePlayerRank> Ranking { get; set; }
@@ -36,9 +37,10 @@ namespace TTT.DomainModel.Entities
                 SeasonId = seasonId,
                 FixtureId = fixtureId,
                 Number = number,
-                QualityAverage = 0,
-                State = FixtureState.GroupsSelection,
+                QualityAverage = 0d,
+                State = FixtureState.Upcoming,
                 Type = type,
+                Players = new List<FixturePlayer>(),
                 Pyramids = new List<Pyramid>(),
                 GroupMatches = new List<GroupMatch>(),
                 Ranking = new List<FixturePlayerRank>()
@@ -64,6 +66,13 @@ namespace TTT.DomainModel.Entities
         {
             return $"{Constants.FixturePrefix}#{fixtureId}";
         }
+    }
+
+    public class FixturePlayer
+    {
+        public Guid PlayerId { get; set; }
+        public string Name { get; set; }
+        public double Quality { get; set; }
     }
 
     public class GroupMatch

@@ -36,11 +36,11 @@ namespace PatchEndSeasonFunction.Tests
                 .Returns(Task.CompletedTask);
 
             _seasonRepositoryMock
-                .Setup(x => x.LoadAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(x => x.LoadSeasonAsync(It.IsAny<string>()))
                 .ReturnsAsync((Season)null);
 
             _seasonRepositoryMock
-                .Setup(x => x.LoadAsync(Season.CreatePK(ExistingSeasonId), Season.CreateSK(ExistingSeasonId)))
+                .Setup(x => x.LoadSeasonAsync(ExistingSeasonId))
                 .ReturnsAsync(new Season());
 
             _snsClientMock
@@ -110,8 +110,7 @@ namespace PatchEndSeasonFunction.Tests
             var actualResponse = await _sutFunction.FunctionHandler(request, _testContext);
 
             // Assert
-            _seasonRepositoryMock.Verify(
-                x => x.LoadAsync(Season.CreatePK(nonExistingSeasonId), Season.CreateSK(nonExistingSeasonId)), Times.Once);
+            _seasonRepositoryMock.Verify(x => x.LoadSeasonAsync(nonExistingSeasonId), Times.Once);
             Assert.Equal((int)HttpStatusCode.NotFound, actualResponse.StatusCode);
         }
 

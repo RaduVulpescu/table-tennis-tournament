@@ -42,10 +42,10 @@ namespace SQSEventCreateFinalsFunction
                 return;
             }
 
-            var beginnersFinal = SeasonFixture.Create(newCreatedSeason.SeasonId, FixtureType.BeginnerFinal);
-            var intermediateFinal = SeasonFixture.Create(newCreatedSeason.SeasonId, FixtureType.IntermediateFinal);
-            var advancedFinal = SeasonFixture.Create(newCreatedSeason.SeasonId, FixtureType.AdvancedFinal);
-            var openFinal = SeasonFixture.Create(newCreatedSeason.SeasonId, FixtureType.OpenFinal);
+            var beginnersFinal = SeasonFixture.Create(newCreatedSeason.SeasonId, FixtureType.BeginnerFinal, 0);
+            var intermediateFinal = SeasonFixture.Create(newCreatedSeason.SeasonId, FixtureType.IntermediateFinal, 0);
+            var advancedFinal = SeasonFixture.Create(newCreatedSeason.SeasonId, FixtureType.AdvancedFinal, 0);
+            var openFinal = SeasonFixture.Create(newCreatedSeason.SeasonId, FixtureType.OpenFinal, 0);
 
             var createFinalsTasks = new[]
             {

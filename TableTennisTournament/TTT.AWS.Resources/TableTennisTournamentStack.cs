@@ -41,40 +41,46 @@ namespace TTT.AWS.Resources
             endSeasonTopic.AddSubscription(new SqsSubscription(updatePlayersStatsQueue));
 
             var getPlayersFunction = CreateFunction("get-players-function", "GetPlayersFunction");
-            table.GrantCustomReadData(getPlayersFunction);
+            table.GrantDescribeReadData(getPlayersFunction);
 
             var getPlayerFunction = CreateFunction("get-player-function", "GetPlayerFunction");
-            table.GrantCustomReadData(getPlayerFunction);
+            table.GrantDescribeReadData(getPlayerFunction);
 
             var postPlayerFunction = CreateFunction("post-player-function", "PostPlayerFunction");
-            table.GrantCustomWriteData(postPlayerFunction);
+            table.GrantDescribeWriteData(postPlayerFunction);
 
             var putPlayerFunction = CreateFunction("put-player-function", "PutPlayerFunction");
-            table.GrantCustomReadWriteData(putPlayerFunction);
+            table.GrantDescribeReadWriteData(putPlayerFunction);
 
             var deletePlayerFunction = CreateFunction("delete-player-function", "DeletePlayerFunction");
-            table.GrantCustomReadWriteData(deletePlayerFunction);
+            table.GrantDescribeReadWriteData(deletePlayerFunction);
 
             var endSeasonFunction = CreateFunction("end-season-function", "PatchEndSeasonFunction");
-            table.GrantCustomReadWriteData(endSeasonFunction);
+            table.GrantDescribeReadWriteData(endSeasonFunction);
             endSeasonTopic.GrantPublish(endSeasonFunction);
 
             var startSeasonFunction = CreateFunction("start-season-function", "SQSEventStartSeasonFunction");
-            table.GrantCustomWriteData(startSeasonFunction);
+            table.GrantDescribeWriteData(startSeasonFunction);
             startSeasonQueue.GrantConsumeMessages(startSeasonFunction);
             startSeasonFunction.AddEventSource(new SqsEventSource(startSeasonQueue));
             createFinalsQueue.GrantSendMessages(startSeasonFunction);
 
             var createFinalsFunction = CreateFunction("create-finals-function", "SQSEventCreateFinalsFunction");
-            table.GrantCustomWriteData(createFinalsFunction);
+            table.GrantDescribeWriteData(createFinalsFunction);
             createFinalsQueue.GrantConsumeMessages(createFinalsFunction);
             createFinalsFunction.AddEventSource(new SqsEventSource(createFinalsQueue));
 
             var getSeasonsFunction = CreateFunction("get-seasons-function", "GetSeasonsFunction");
-            table.GrantCustomReadData(getSeasonsFunction);
+            table.GrantDescribeReadData(getSeasonsFunction);
 
             var getSeasonPlayersFunction = CreateFunction("get-seasons-players-function", "GetSeasonPlayersFunction");
-            table.GrantCustomReadData(getSeasonPlayersFunction);
+            table.GrantDescribeReadData(getSeasonPlayersFunction);
+
+            var getUpcomingFixturesFunction = CreateFunction("get-upcoming-fixtures-function", "GetUpcomingFixturesFunction");
+            table.GrantDescribeReadData(getUpcomingFixturesFunction);
+
+            var postFixtureFunction = CreateFunction("post-fixture-function", "AddFixtureFunction");
+            table.GrantDescribeReadWriteData(postFixtureFunction);
 
             var httpApi = new HttpApi(this, "ttt-http-api", new HttpApiProps
             {
@@ -160,6 +166,26 @@ namespace TTT.AWS.Resources
                     Handler = getSeasonPlayersFunction
                 })
             });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/seasons/{seasonId}/fixtures",
+                Methods = new[] { HttpMethod.GET },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = getUpcomingFixturesFunction
+                })
+            });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/seasons/{seasonId}/fixtures",
+                Methods = new[] { HttpMethod.POST },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = postFixtureFunction
+                })
+            });
         }
 
         private Function CreateFunction(string functionName, string functionAssembly)
@@ -177,18 +203,18 @@ namespace TTT.AWS.Resources
 
     public static class Extensions
     {
-        public static void GrantCustomReadData(this Table table, IGrantable grantee)
+        public static void GrantDescribeReadData(this Table table, IGrantable grantee)
         {
             table.GrantDescribeTable(grantee);
             table.GrantReadData(grantee);
         }
 
-        public static void GrantCustomWriteData(this Table table, IGrantable grantee)
+        public static void GrantDescribeWriteData(this Table table, IGrantable grantee)
         {
             table.GrantDescribeTable(grantee);
             table.GrantWriteData(grantee);
         }
-        public static void GrantCustomReadWriteData(this Table table, IGrantable grantee)
+        public static void GrantDescribeReadWriteData(this Table table, IGrantable grantee)
         {
             table.GrantDescribeTable(grantee);
             table.GrantReadWriteData(grantee);

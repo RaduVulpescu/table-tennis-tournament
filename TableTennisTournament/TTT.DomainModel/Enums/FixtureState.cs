@@ -2,8 +2,9 @@
 {
     public enum FixtureState
     {
+        Upcoming,
         GroupsSelection,
-        MatchesStage,
+        PyramidsStage,
         Finished
     }
 }

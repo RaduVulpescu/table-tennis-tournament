@@ -55,7 +55,7 @@ namespace PatchEndSeasonFunction
 
             var seasonId = request.PathParameters["seasonId"];
 
-            var currentSeason = await _seasonRepository.LoadAsync(Season.CreatePK(seasonId), Season.CreateSK(seasonId));
+            var currentSeason = await _seasonRepository.LoadSeasonAsync(seasonId);
             if (currentSeason is null)
             {
                 return new APIGatewayHttpApiV2ProxyResponse
