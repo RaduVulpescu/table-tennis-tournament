@@ -42,10 +42,10 @@ namespace TTT.Seasons.Repository
             return _dbContext.LoadAsync<Season>(Season.CreatePK(seasonId), Season.CreateSK(seasonId));
         }
 
-        public Task<List<SeasonFixture>> LoadFixturesAsync(string partitionKey)
+        public Task<List<SeasonFixture>> LoadFixturesAsync(string seasonId)
         {
             var seasonsAsyncSearch = _dbContext.QueryAsync<SeasonFixture>(
-                SeasonPlayer.CreatePK(partitionKey),
+                SeasonFixture.CreatePK(seasonId),
                 QueryOperator.BeginsWith,
                 new[] { $"{Constants.FixturePrefix}#" }
             );

@@ -40,7 +40,7 @@ namespace GetUpcomingFixturesFunction
                 };
             }
 
-            var fixtures = await _seasonRepository.LoadFixturesAsync(Season.CreatePK(seasonId));
+            var fixtures = await _seasonRepository.LoadFixturesAsync(seasonId);
             var upcomingFixtures = fixtures.Where(x => x.State == FixtureState.Upcoming);
 
             return new APIGatewayHttpApiV2ProxyResponse
