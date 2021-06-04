@@ -18,5 +18,10 @@ namespace TTT.Services
         {
             return _snsClient.PublishAsync(request, cancellationToken);
         }
+
+        public Task<CreatePlatformEndpointResponse> CreatePlatformEndpointAsync(CreatePlatformEndpointRequest request)
+        {
+            return _snsClient.CreatePlatformEndpointAsync(request);
+        }
     }
 }

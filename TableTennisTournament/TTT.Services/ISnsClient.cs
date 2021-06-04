@@ -7,5 +7,6 @@ namespace TTT.Services
     public interface ISnsClient
     {
         Task<PublishResponse> PublishAsync(PublishRequest request, CancellationToken cancellationToken = default);
+        Task<CreatePlatformEndpointResponse> CreatePlatformEndpointAsync(CreatePlatformEndpointRequest request);
     }
 }

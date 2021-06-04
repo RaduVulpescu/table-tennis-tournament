@@ -10,6 +10,7 @@ namespace TTT.Seasons.Repository
         public Task<List<SeasonPlayer>> ListSeasonPlayersAsync(string seasonId);
         public Task<Season> LoadSeasonAsync(string seasonId);
         public Task<List<SeasonFixture>> LoadFixturesAsync(string seasonId);
+        public Task<SeasonFixture> LoadFixtureAsync(string seasonId, string fixtureId);
         public Task SaveAsync(Season season);
         public Task SaveAsync(SeasonFixture fixture);
         public Task SaveAsync(SeasonPlayer player);

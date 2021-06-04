@@ -53,11 +53,11 @@ namespace AddFixtureFunction
                 };
             }
 
-            var fixtures = await _seasonRepository.LoadFixturesAsync(Season.CreatePK(seasonId));
+            var fixtures = await _seasonRepository.LoadFixturesAsync(seasonId);
             var newFixture = SeasonFixture.Create(
                 season.SeasonId,
                 FixtureType.Normal,
-                fixtures.Max(x => x.Number).GetValueOrDefault(1),
+                fixtures.Max(x => x.Number).GetValueOrDefault(0) + 1,
                 fixtureDTO.Date,
                 fixtureDTO.Location
             );

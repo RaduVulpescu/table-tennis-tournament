@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Amazon.DynamoDBv2.DataModel;
 using TTT.DomainModel.Enums;
 
@@ -18,7 +19,7 @@ namespace TTT.DomainModel.Entities
         public int? Number { get; set; }
         public DateTime? Date { get; set; }
         public string Location { get; set; }
-        public double QualityAverage { get; set; }
+        public double QualityAverage { get; private set; }
         public FixtureState State { get; set; }
         public FixtureType Type { get; set; }
         public List<FixturePlayer> Players { get; set; }
@@ -40,21 +41,22 @@ namespace TTT.DomainModel.Entities
                 QualityAverage = 0d,
                 State = FixtureState.Upcoming,
                 Type = type,
-                Players = new List<FixturePlayer>(),
                 Pyramids = new List<Pyramid>(),
                 GroupMatches = new List<GroupMatch>(),
                 Ranking = new List<FixturePlayerRank>()
             };
 
-            instance.Update(date, location);
+            instance.Update(date, location, new List<FixturePlayer>());
 
             return instance;
         }
 
-        public void Update(DateTime? date, string location)
+        public void Update(DateTime? date, string location, List<FixturePlayer> players)
         {
             Date = date;
             Location = location;
+            Players = players;
+            QualityAverage = players.Select(x => x.Quality.GetValueOrDefault(0d)).DefaultIfEmpty(0d).Average();
         }
 
         public static string CreatePK(string seasonId)
@@ -72,7 +74,7 @@ namespace TTT.DomainModel.Entities
     {
         public Guid PlayerId { get; set; }
         public string Name { get; set; }
-        public double Quality { get; set; }
+        public double? Quality { get; set; }
     }
 
     public class GroupMatch

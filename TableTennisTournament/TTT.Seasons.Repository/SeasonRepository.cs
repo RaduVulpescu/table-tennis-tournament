@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
@@ -51,6 +52,19 @@ namespace TTT.Seasons.Repository
             );
 
             return seasonsAsyncSearch.GetRemainingAsync();
+        }
+
+        public async Task<SeasonFixture> LoadFixtureAsync(string seasonId, string fixtureId)
+        {
+            var fixturesAsyncSearch = _dbContext.QueryAsync<SeasonFixture>(
+                SeasonFixture.CreatePK(seasonId),
+                QueryOperator.Equal,
+                new[] { SeasonFixture.CreateSK(fixtureId) }
+            );
+
+            var fixture = (await fixturesAsyncSearch.GetRemainingAsync()).SingleOrDefault();
+
+            return fixture;
         }
 
         public Task SaveAsync(Season season)

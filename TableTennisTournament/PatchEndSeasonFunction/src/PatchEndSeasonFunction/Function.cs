@@ -7,7 +7,6 @@ using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
-using TTT.DomainModel.Entities;
 using TTT.DomainModel.Validators;
 using TTT.Seasons.Repository;
 using TTT.Services;

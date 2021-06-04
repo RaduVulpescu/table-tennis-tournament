@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -40,12 +41,18 @@ namespace GetUpcomingFixturesFunction
                 };
             }
 
-            var fixtures = await _seasonRepository.LoadFixturesAsync(seasonId);
-            var upcomingFixtures = fixtures.Where(x => x.State == FixtureState.Upcoming);
+            var state = request.QueryStringParameters != null && request.QueryStringParameters.ContainsKey("state")
+                ? request.QueryStringParameters["state"]
+                : string.Empty;
+
+            var dbFixtures = await _seasonRepository.LoadFixturesAsync(seasonId);
+            var seasonFixtures = state == ((int) FixtureState.Upcoming).ToString()
+                ? dbFixtures.Where(x => x.State == FixtureState.Upcoming)
+                : dbFixtures.Where(x => x.State != FixtureState.Upcoming);
 
             return new APIGatewayHttpApiV2ProxyResponse
             {
-                Body = JsonConvert.SerializeObject(upcomingFixtures),
+                Body = JsonConvert.SerializeObject(seasonFixtures),
                 StatusCode = (int)HttpStatusCode.OK
             };
         }

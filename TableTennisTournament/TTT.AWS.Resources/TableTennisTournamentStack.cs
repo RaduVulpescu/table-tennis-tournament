@@ -1,6 +1,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGatewayv2;
 using Amazon.CDK.AWS.APIGatewayv2.Integrations;
+using Amazon.CDK.AWS.Cognito;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
@@ -13,6 +14,7 @@ using Construct = Constructs.Construct;
 
 namespace TTT.AWS.Resources
 {
+    // ReSharper disable UnusedVariable
     public class TableTennisTournamentStack : Stack
     {
         private const string TargetFrameWork = "netcoreapp3.1";
@@ -39,6 +41,8 @@ namespace TTT.AWS.Resources
 
             endSeasonTopic.AddSubscription(new SqsSubscription(startSeasonQueue));
             endSeasonTopic.AddSubscription(new SqsSubscription(updatePlayersStatsQueue));
+
+            var registerDeviceTokenFunction = CreateFunction("register-device-token-function", "RegisterDeviceTokenFunction");
 
             var getPlayersFunction = CreateFunction("get-players-function", "GetPlayersFunction");
             table.GrantDescribeReadData(getPlayersFunction);
@@ -82,9 +86,25 @@ namespace TTT.AWS.Resources
             var postFixtureFunction = CreateFunction("post-fixture-function", "AddFixtureFunction");
             table.GrantDescribeReadWriteData(postFixtureFunction);
 
+            var putFixtureFunction = CreateFunction("put-fixture-function", "PutFixtureFunction");
+            table.GrantDescribeReadWriteData(putFixtureFunction);
+
+            var startFixtureFunction = CreateFunction("start-fixture-function", "StartFixtureFunction");
+            table.GrantDescribeReadWriteData(startFixtureFunction);
+
             var httpApi = new HttpApi(this, "ttt-http-api", new HttpApiProps
             {
                 ApiName = "ttt-api"
+            });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/aws/platformApplication/endpoints",
+                Methods = new[] { HttpMethod.POST },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = registerDeviceTokenFunction
+                })
             });
 
             httpApi.AddRoutes(new AddRoutesOptions
@@ -186,6 +206,26 @@ namespace TTT.AWS.Resources
                     Handler = postFixtureFunction
                 })
             });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/seasons/{seasonId}/fixtures/{fixtureId}",
+                Methods = new[] { HttpMethod.PUT },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = putFixtureFunction
+                })
+            });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/seasons/{seasonId}/fixtures/{fixtureId}/start",
+                Methods = new[] { HttpMethod.POST },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = startFixtureFunction
+                })
+            });
         }
 
         private Function CreateFunction(string functionName, string functionAssembly)
@@ -201,7 +241,7 @@ namespace TTT.AWS.Resources
         }
     }
 
-    public static class Extensions
+    internal static class Extensions
     {
         public static void GrantDescribeReadData(this Table table, IGrantable grantee)
         {
