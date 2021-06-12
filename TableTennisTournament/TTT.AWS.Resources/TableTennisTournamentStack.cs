@@ -1,7 +1,6 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.APIGatewayv2;
 using Amazon.CDK.AWS.APIGatewayv2.Integrations;
-using Amazon.CDK.AWS.Cognito;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
@@ -29,18 +28,18 @@ namespace TTT.AWS.Resources
                 BillingMode = BillingMode.PAY_PER_REQUEST
             });
 
-            var startSeasonQueue = new Queue(this, "StartSeasonQueue");
-            var updatePlayersStatsQueue = new Queue(this, "UpdatePlayerStatsQueue");
-            var createFinalsQueue = new Queue(this, "CreateFinalsQueue");
+            //var startSeasonQueue = new Queue(this, "StartSeasonQueue");
+            //var updatePlayersStatsQueue = new Queue(this, "UpdatePlayerStatsQueue");
+            //var createFinalsQueue = new Queue(this, "CreateFinalsQueue");
 
-            var endSeasonTopic = new Topic(this, "EndSeasonTopic", new TopicProps
-            {
-                DisplayName = "End Season subscription topic",
-                TopicName = "endSeasonTopic"
-            });
+            //var endSeasonTopic = new Topic(this, "EndSeasonTopic", new TopicProps
+            //{
+            //    DisplayName = "End Season subscription topic",
+            //    TopicName = "endSeasonTopic"
+            //});
 
-            endSeasonTopic.AddSubscription(new SqsSubscription(startSeasonQueue));
-            endSeasonTopic.AddSubscription(new SqsSubscription(updatePlayersStatsQueue));
+            //endSeasonTopic.AddSubscription(new SqsSubscription(startSeasonQueue));
+            //endSeasonTopic.AddSubscription(new SqsSubscription(updatePlayersStatsQueue));
 
             var registerDeviceTokenFunction = CreateFunction("register-device-token-function", "RegisterDeviceTokenFunction");
 
@@ -61,18 +60,18 @@ namespace TTT.AWS.Resources
 
             var endSeasonFunction = CreateFunction("end-season-function", "PatchEndSeasonFunction");
             table.GrantDescribeReadWriteData(endSeasonFunction);
-            endSeasonTopic.GrantPublish(endSeasonFunction);
+            //endSeasonTopic.GrantPublish(endSeasonFunction);
 
             var startSeasonFunction = CreateFunction("start-season-function", "SQSEventStartSeasonFunction");
             table.GrantDescribeWriteData(startSeasonFunction);
-            startSeasonQueue.GrantConsumeMessages(startSeasonFunction);
-            startSeasonFunction.AddEventSource(new SqsEventSource(startSeasonQueue));
-            createFinalsQueue.GrantSendMessages(startSeasonFunction);
+            //startSeasonQueue.GrantConsumeMessages(startSeasonFunction);
+            //startSeasonFunction.AddEventSource(new SqsEventSource(startSeasonQueue));
+            //createFinalsQueue.GrantSendMessages(startSeasonFunction);
 
             var createFinalsFunction = CreateFunction("create-finals-function", "SQSEventCreateFinalsFunction");
             table.GrantDescribeWriteData(createFinalsFunction);
-            createFinalsQueue.GrantConsumeMessages(createFinalsFunction);
-            createFinalsFunction.AddEventSource(new SqsEventSource(createFinalsQueue));
+            //createFinalsQueue.GrantConsumeMessages(createFinalsFunction);
+            //createFinalsFunction.AddEventSource(new SqsEventSource(createFinalsQueue));
 
             var getSeasonsFunction = CreateFunction("get-seasons-function", "GetSeasonsFunction");
             table.GrantDescribeReadData(getSeasonsFunction);

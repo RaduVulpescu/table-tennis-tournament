@@ -4,6 +4,7 @@
     {
         Upcoming,
         GroupsSelection,
+        GroupsStage,
         PyramidsStage,
         Finished
     }

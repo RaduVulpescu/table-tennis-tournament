@@ -16,7 +16,6 @@ namespace TTT.DomainModel.Entities
 
         public Guid SeasonId { get; set; }
         public Guid FixtureId { get; set; }
-        public int? Number { get; set; }
         public DateTime? Date { get; set; }
         public string Location { get; set; }
         public double QualityAverage { get; private set; }
@@ -27,7 +26,7 @@ namespace TTT.DomainModel.Entities
         public List<Pyramid> Pyramids { get; set; }
         public List<FixturePlayerRank> Ranking { get; set; }
 
-        public static SeasonFixture Create(Guid seasonId, FixtureType type, int? number = null, DateTime? date = null, string location = null)
+        public static SeasonFixture Create(Guid seasonId, FixtureType type, DateTime? date = null, string location = null)
         {
             var fixtureId = Guid.NewGuid();
 
@@ -37,7 +36,6 @@ namespace TTT.DomainModel.Entities
                 SK = CreateSK(fixtureId.ToString()),
                 SeasonId = seasonId,
                 FixtureId = fixtureId,
-                Number = number,
                 QualityAverage = 0d,
                 State = FixtureState.Upcoming,
                 Type = type,
@@ -82,8 +80,8 @@ namespace TTT.DomainModel.Entities
         public Group Group { get; set; }
         public string PlayerOneName { get; set; }
         public string PlayerTwoName { get; set; }
-        public int SetsWonByPlayerOne { get; set; }
-        public int SetsWonByPlayerTwo { get; set; }
+        public int? SetsWonByPlayerOne { get; set; }
+        public int? SetsWonByPlayerTwo { get; set; }
     }
 
     public class FixturePlayerRank

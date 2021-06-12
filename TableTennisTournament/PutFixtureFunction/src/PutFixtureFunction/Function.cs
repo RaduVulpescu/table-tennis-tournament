@@ -51,7 +51,7 @@ namespace PutFixtureFunction
             }
 
             fixture.Update(
-                fixtureDTO.Date,
+                fixtureDTO.Date.ToUniversalTime(),
                 fixtureDTO.Location,
                 fixtureDTO.Players
             );

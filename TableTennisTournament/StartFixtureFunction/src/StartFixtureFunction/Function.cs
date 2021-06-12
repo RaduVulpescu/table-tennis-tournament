@@ -1,14 +1,16 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
+using TTT.DomainModel.Entities;
 using TTT.DomainModel.Enums;
 using TTT.Seasons.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-
 namespace StartFixtureFunction
 {
     public class Function : BaseFunction
@@ -27,7 +29,6 @@ namespace StartFixtureFunction
 
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
-
             var seasonId = request.PathParameters["seasonId"];
             var fixtureId = request.PathParameters["fixtureId"];
             var fixture = await _seasonRepository.LoadFixtureAsync(seasonId, fixtureId);
@@ -41,7 +42,21 @@ namespace StartFixtureFunction
                 };
             }
 
-            fixture.State = FixtureState.GroupsSelection;
+            fixture.State = FixtureState.GroupsStage;
+
+            var playersCount = fixture.Players.Count;
+            if (playersCount < 9)
+            {
+                CreateOneGroupMatches(fixture);
+            }
+            else if (playersCount < 16)
+            {
+                CreateTwoGroupsMatches(fixture);
+            }
+            else
+            {
+                CreateFourGroupsMatches(fixture);
+            }
 
             await _seasonRepository.SaveAsync(fixture);
 
@@ -49,6 +64,55 @@ namespace StartFixtureFunction
             {
                 StatusCode = (int)HttpStatusCode.NoContent
             };
+        }
+
+        public static void CreateOneGroupMatches(SeasonFixture fixture)
+        {
+            var fixturePlayers = fixture.Players.OrderByDescending(p => p.Quality.GetValueOrDefault(0)).ToArray();
+
+            FillGroupWithPlayers(fixture, fixturePlayers, Group.A);
+        }
+
+        private static void CreateTwoGroupsMatches(SeasonFixture fixture)
+        {
+            var fixturePlayers = fixture.Players.OrderByDescending(p => p.Quality.GetValueOrDefault(0)).ToArray();
+
+            var groupAPlayers = fixturePlayers.Where((_, index) => index % 4 == 0 ^ index % 4 == 3).ToArray();
+            var groupBPlayers = fixturePlayers.Where((_, index) => index % 4 == 1 ^ index % 4 == 2).ToArray();
+
+            FillGroupWithPlayers(fixture, groupAPlayers, Group.A);
+            FillGroupWithPlayers(fixture, groupBPlayers, Group.B);
+        }
+
+        private static void CreateFourGroupsMatches(SeasonFixture fixture)
+        {
+            var fixturePlayers = fixture.Players.OrderByDescending(p => p.Quality.GetValueOrDefault(0)).ToArray();
+
+            var groupAPlayers = new[] { fixturePlayers[0], fixturePlayers[7], fixturePlayers[8], fixturePlayers[15] };
+            var groupBPlayers = new[] { fixturePlayers[1], fixturePlayers[6], fixturePlayers[9], fixturePlayers[14] };
+            var groupCPlayers = new[] { fixturePlayers[2], fixturePlayers[5], fixturePlayers[10], fixturePlayers[13] };
+            var groupDPlayers = new[] { fixturePlayers[3], fixturePlayers[4], fixturePlayers[11], fixturePlayers[12] };
+
+            FillGroupWithPlayers(fixture, groupAPlayers, Group.A);
+            FillGroupWithPlayers(fixture, groupBPlayers, Group.B);
+            FillGroupWithPlayers(fixture, groupCPlayers, Group.C);
+            FillGroupWithPlayers(fixture, groupDPlayers, Group.D);
+        }
+
+        private static void FillGroupWithPlayers(SeasonFixture fixture, IReadOnlyList<FixturePlayer> fixturePlayers, Group group)
+        {
+            for (var i = 0; i < fixturePlayers.Count; i++)
+            {
+                for (var j = i + 1; j < fixturePlayers.Count; j++)
+                {
+                    fixture.GroupMatches.Add(new GroupMatch
+                    {
+                        Group = group,
+                        PlayerOneName = fixturePlayers[i].Name,
+                        PlayerTwoName = fixturePlayers[j].Name
+                    });
+                }
+            }
         }
     }
 }

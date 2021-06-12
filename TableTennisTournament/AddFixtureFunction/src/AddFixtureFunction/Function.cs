@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
@@ -57,8 +56,7 @@ namespace AddFixtureFunction
             var newFixture = SeasonFixture.Create(
                 season.SeasonId,
                 FixtureType.Normal,
-                fixtures.Max(x => x.Number).GetValueOrDefault(0) + 1,
-                fixtureDTO.Date,
+                fixtureDTO.Date.ToUniversalTime(),
                 fixtureDTO.Location
             );
 
