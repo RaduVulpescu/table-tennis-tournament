@@ -98,12 +98,13 @@ namespace PostPlayerFunction.Tests
             Assert.Equal(expectedPlayer!.Height, actualPlayer!.Height);
             Assert.Equal(expectedPlayer!.Weight, actualPlayer!.Weight);
             Assert.Equal(expectedPlayer!.CurrentLevel, actualPlayer!.CurrentLevel);
+            Assert.Equal(expectedPlayer!.BestLevel, actualPlayer!.BestLevel);
+
 
             Assert.Null(actualPlayer!.Quality);
             Assert.Null(actualPlayer!.BestScore);
             Assert.Null(actualPlayer!.BestRanking);
             Assert.Null(actualPlayer!.BestTop4);
-            Assert.Null(actualPlayer!.BestLevel);
 
             Assert.Equal(0, actualPlayer!.OpenCups);
             Assert.Equal(0, actualPlayer!.AdvancedCups);

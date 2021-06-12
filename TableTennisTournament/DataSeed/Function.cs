@@ -48,6 +48,13 @@ namespace DataSeed
             };
         }
 
+        public async Task<int> CreatePlayerAsync(Player player)
+        {
+            await _playerRepository.SaveAsync(player);
+
+            return (int)HttpStatusCode.Created;
+        }
+
         public async Task<int> CreateSeasonPlayerAsync(SeasonPlayer seasonPlayer)
         {
             await _seasonRepository.SaveAsync(seasonPlayer);

@@ -24,7 +24,7 @@ namespace TTT.DomainModel.Entities
         public int? BestRanking { get; set; }
         public double? BestTop4 { get; set; }
         public Level CurrentLevel { get; set; }
-        public Level? BestLevel { get; set; }
+        public Level BestLevel { get; set; }
 
         public int OpenCups { get; set; }
         public int AdvancedCups { get; set; }
@@ -53,7 +53,7 @@ namespace TTT.DomainModel.Entities
             return instance;
         }
 
-        public void Update(string name, string city, int? birthYear, int? height, int? weight, Level currentLevel)
+        public void Update(string name, string city, int? birthYear, int? height, int? weight, Level currentLevel, Level bestLevel = Level.Undefined)
         {
             Name = name;
             City = city;
@@ -61,6 +61,7 @@ namespace TTT.DomainModel.Entities
             Height = height;
             Weight = weight;
             CurrentLevel = currentLevel;
+            BestLevel = bestLevel;
         }
 
         public static string CreatePK(string playerId)

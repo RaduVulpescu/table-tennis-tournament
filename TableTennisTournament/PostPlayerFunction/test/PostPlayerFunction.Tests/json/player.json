@@ -3,5 +3,6 @@
   "city": "Iasi",
   "height": 180,
   "weight": 70,
-  "currentLevel": 3
+  "currentLevel": 3,
+  "bestLevel": 0
 }
