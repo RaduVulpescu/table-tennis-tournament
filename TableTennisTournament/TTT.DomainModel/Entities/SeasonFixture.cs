@@ -23,6 +23,7 @@ namespace TTT.DomainModel.Entities
         public FixtureType Type { get; set; }
         public List<FixturePlayer> Players { get; set; }
         public List<GroupMatch> GroupMatches { get; set; }
+        public List<DeciderMatch> DeciderMatches { get; set; }
         public List<Pyramid> Pyramids { get; set; }
         public List<FixturePlayerRank> Ranking { get; set; }
 
@@ -41,6 +42,7 @@ namespace TTT.DomainModel.Entities
                 Type = type,
                 Pyramids = new List<Pyramid>(),
                 GroupMatches = new List<GroupMatch>(),
+                DeciderMatches = new List<DeciderMatch>(),
                 Ranking = new List<FixturePlayerRank>()
             };
 
@@ -77,11 +79,17 @@ namespace TTT.DomainModel.Entities
 
     public class GroupMatch
     {
+        public Guid MatchId { get; set; }
         public Group Group { get; set; }
-        public string PlayerOneName { get; set; }
-        public string PlayerTwoName { get; set; }
-        public int? SetsWonByPlayerOne { get; set; }
-        public int? SetsWonByPlayerTwo { get; set; }
+        public PlayerMatchStats PlayerOneStats { get; set; }
+        public PlayerMatchStats PlayerTwoStats { get; set; }
+    }
+
+    public class DeciderMatch
+    {
+        public Guid MatchId { get; set; }
+        public PlayerMatchStats PlayerOneStats { get; set; }
+        public PlayerMatchStats PlayerTwoStats { get; set; }
     }
 
     public class FixturePlayerRank
@@ -91,16 +99,4 @@ namespace TTT.DomainModel.Entities
         public int? Rank { get; set; }
         public double? Score { get; set; }
     }
-
-    //public List<FixtureMatch> Matches { get; set; }
-    //public class FixtureMatch
-    //{
-    //    public MatchType Type { get; set; }
-    //    public Guid PlayerOneId { get; set; }
-    //    public string PlayerOneName { get; set; }
-    //    public Guid PlayerTwoId { get; set; }
-    //    public string PlayerTwoName { get; set; }
-    //    public int PlayerOneSetsWon { get; set; }
-    //    public int PlayerTwoSetsWon { get; set; }
-    //}
 }

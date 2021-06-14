@@ -91,6 +91,9 @@ namespace TTT.AWS.Resources
             var startFixtureFunction = CreateFunction("start-fixture-function", "StartFixtureFunction");
             table.GrantDescribeReadWriteData(startFixtureFunction);
 
+            var patchGroupMatchFunction = CreateFunction("patch-group-match-function", "PatchGroupMatchFunction");
+            table.GrantDescribeReadWriteData(patchGroupMatchFunction);
+
             var httpApi = new HttpApi(this, "ttt-http-api", new HttpApiProps
             {
                 ApiName = "ttt-api"
@@ -223,6 +226,16 @@ namespace TTT.AWS.Resources
                 Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
                 {
                     Handler = startFixtureFunction
+                })
+            });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/seasons/{seasonId}/fixtures/{fixtureId}/groupMatches/{matchId}",
+                Methods = new[] { HttpMethod.PATCH },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = patchGroupMatchFunction
                 })
             });
         }

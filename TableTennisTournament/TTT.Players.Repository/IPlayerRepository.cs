@@ -9,6 +9,7 @@ namespace TTT.Players.Repository
         Task<List<Player>> ListAsync();
         Task<Player> LoadAsync(string partitionKey, string sortKey);
         Task SaveAsync(Player player);
+        Task SaveAsync(PlayerMatch playerMatch);
         Task DeleteAsync(Player player);
     }
 }

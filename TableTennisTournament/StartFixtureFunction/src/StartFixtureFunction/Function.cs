@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,6 +9,7 @@ using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using TTT.DomainModel.Entities;
 using TTT.DomainModel.Enums;
+using TTT.Players.Repository;
 using TTT.Seasons.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -16,15 +18,18 @@ namespace StartFixtureFunction
     public class Function : BaseFunction
     {
         private readonly ISeasonRepository _seasonRepository;
+        private readonly IPlayerRepository _playerRepository;
 
         public Function()
         {
             _seasonRepository = ServiceProvider.GetService<ISeasonRepository>();
+            _playerRepository = ServiceProvider.GetService<IPlayerRepository>();
         }
 
-        public Function(ISeasonRepository seasonRepository)
+        public Function(ISeasonRepository seasonRepository, IPlayerRepository playerRepository)
         {
             _seasonRepository = seasonRepository;
+            _playerRepository = playerRepository;
         }
 
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
@@ -43,6 +48,7 @@ namespace StartFixtureFunction
             }
 
             fixture.State = FixtureState.GroupsStage;
+            fixture.Players = fixture.Players.OrderByDescending(p => p.Quality.GetValueOrDefault(0d)).ToList();
 
             var playersCount = fixture.Players.Count;
             if (playersCount < 9)
@@ -66,14 +72,14 @@ namespace StartFixtureFunction
             };
         }
 
-        public static void CreateOneGroupMatches(SeasonFixture fixture)
+        public void CreateOneGroupMatches(SeasonFixture fixture)
         {
             var fixturePlayers = fixture.Players.OrderByDescending(p => p.Quality.GetValueOrDefault(0)).ToArray();
 
             FillGroupWithPlayers(fixture, fixturePlayers, Group.A);
         }
 
-        private static void CreateTwoGroupsMatches(SeasonFixture fixture)
+        private void CreateTwoGroupsMatches(SeasonFixture fixture)
         {
             var fixturePlayers = fixture.Players.OrderByDescending(p => p.Quality.GetValueOrDefault(0)).ToArray();
 
@@ -84,7 +90,7 @@ namespace StartFixtureFunction
             FillGroupWithPlayers(fixture, groupBPlayers, Group.B);
         }
 
-        private static void CreateFourGroupsMatches(SeasonFixture fixture)
+        private void CreateFourGroupsMatches(SeasonFixture fixture)
         {
             var fixturePlayers = fixture.Players.OrderByDescending(p => p.Quality.GetValueOrDefault(0)).ToArray();
 
@@ -99,18 +105,48 @@ namespace StartFixtureFunction
             FillGroupWithPlayers(fixture, groupDPlayers, Group.D);
         }
 
-        private static void FillGroupWithPlayers(SeasonFixture fixture, IReadOnlyList<FixturePlayer> fixturePlayers, Group group)
+        private void FillGroupWithPlayers(SeasonFixture fixture, IReadOnlyList<FixturePlayer> fixturePlayers, Group group)
         {
             for (var i = 0; i < fixturePlayers.Count; i++)
             {
                 for (var j = i + 1; j < fixturePlayers.Count; j++)
                 {
+                    var matchId = Guid.NewGuid();
+
+                    var playerOne = fixturePlayers[i];
+                    var playerTwo = fixturePlayers[j];
+
                     fixture.GroupMatches.Add(new GroupMatch
                     {
+                        MatchId = matchId,
                         Group = group,
-                        PlayerOneName = fixturePlayers[i].Name,
-                        PlayerTwoName = fixturePlayers[j].Name
+                        PlayerOneStats = new PlayerMatchStats
+                        {
+                            PlayerId = playerOne.PlayerId,
+                            PlayerName = playerOne.Name
+                        },
+                        PlayerTwoStats = new PlayerMatchStats
+                        {
+                            PlayerId = playerTwo.PlayerId,
+                            PlayerName = playerTwo.Name
+                        }
                     });
+
+                    _playerRepository.SaveAsync(PlayerMatch.Create(
+                        matchId,
+                        playerOne.PlayerId,
+                        playerTwo.PlayerId,
+                        playerOne.Name,
+                        playerTwo.Name
+                    ));
+
+                    _playerRepository.SaveAsync(PlayerMatch.Create(
+                        matchId,
+                        playerTwo.PlayerId,
+                        playerOne.PlayerId,
+                        playerTwo.Name,
+                        playerOne.Name
+                    ));
                 }
             }
         }

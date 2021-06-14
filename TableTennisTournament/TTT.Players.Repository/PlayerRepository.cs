@@ -36,6 +36,11 @@ namespace TTT.Players.Repository
             return _dbContext.SaveAsync(player);
         }
 
+        public Task SaveAsync(PlayerMatch playerMatch)
+        {
+            return _dbContext.SaveAsync(playerMatch);
+        }
+
         public Task DeleteAsync(Player player)
         {
             return _dbContext.DeleteAsync(player);

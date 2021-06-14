@@ -16,4 +16,10 @@ namespace TTT.DomainModel.DTO
         public string Location { get; set; }
         public List<FixturePlayer> Players { get; set; }
     }
+
+    public struct MatchPutDTO
+    {
+        public int SetsWonByPlayerOne { get; set; }
+        public int SetsWonByPlayerTwo { get; set; }
+    }
 }
