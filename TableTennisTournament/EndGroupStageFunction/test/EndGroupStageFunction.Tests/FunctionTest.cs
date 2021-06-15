@@ -84,7 +84,11 @@ namespace EndGroupStageFunction.Tests
                 f.Players.Any(fp => fp.PlayerId == Player1Guid && fp.GroupRank == 1) &&
                 f.Players.Any(fp => fp.PlayerId == Player2Guid && fp.GroupRank == 2) &&
                 f.Players.Any(fp => fp.PlayerId == Player3Guid && fp.GroupRank == 3) &&
-                f.Players.Any(fp => fp.PlayerId == Player4Guid && fp.GroupRank == 4)
+                f.Players.Any(fp => fp.PlayerId == Player4Guid && fp.GroupRank == 4) &&
+                f.Ranking.Any(f => f.PlayerId == Player1Guid && f.Rank == 1 && f.Score == 78.24) &&
+                f.Ranking.Any(f => f.PlayerId == Player2Guid && f.Rank == 2 && f.Score == 76.24) &&
+                f.Ranking.Any(f => f.PlayerId == Player3Guid && f.Rank == 3 && f.Score == 75.24) &&
+                f.Ranking.Any(f => f.PlayerId == Player4Guid && f.Rank == 4 && f.Score == 74.24)
             )), Times.Once);
 
             _seasonRepositoryMock.VerifyNoOtherCalls();
@@ -115,7 +119,13 @@ namespace EndGroupStageFunction.Tests
                 f.Players.Any(fp => fp.PlayerId == Player2Guid && fp.GroupRank == 2) &&
                 f.Players.Any(fp => fp.PlayerId == Player3Guid && fp.GroupRank == 3) &&
                 f.Players.Any(fp => fp.PlayerId == Player4Guid && fp.GroupRank == 5) &&
-                f.Players.Any(fp => fp.PlayerId == Player5Guid && fp.GroupRank == 4)
+                f.Players.Any(fp => fp.PlayerId == Player5Guid && fp.GroupRank == 4) &&
+                f.Ranking.Any(f => f.PlayerId == Player1Guid && f.Rank == 1 && f.Score == 71.86) &&
+                f.Ranking.Any(f => f.PlayerId == Player2Guid && f.Rank == 2 && f.Score == 69.86) &&
+                f.Ranking.Any(f => f.PlayerId == Player3Guid && f.Rank == 3 && f.Score == 68.86) &&
+                f.Ranking.Any(f => f.PlayerId == Player4Guid && f.Rank == 5 && f.Score == 67.86) &&
+                f.Ranking.Any(f => f.PlayerId == Player4Guid && f.Rank == 4 && f.Score == 66.86)
+
             )), Times.Once);
 
             _seasonRepositoryMock.VerifyNoOtherCalls();
@@ -296,6 +306,7 @@ namespace EndGroupStageFunction.Tests
                     new FixturePlayer { PlayerId = Player3Guid },
                     new FixturePlayer { PlayerId = Player4Guid }
                 },
+                QualityAverage = 75.24,
                 GroupMatches = new List<GroupMatch>
                 {
                     CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 0),
@@ -322,6 +333,7 @@ namespace EndGroupStageFunction.Tests
                     new FixturePlayer { PlayerId = Player4Guid },
                     new FixturePlayer { PlayerId = Player5Guid }
                 },
+                QualityAverage = 68.86,
                 GroupMatches = new List<GroupMatch>
                 {
                     CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 0),
@@ -353,6 +365,7 @@ namespace EndGroupStageFunction.Tests
                     new FixturePlayer { PlayerId = Player3Guid },
                     new FixturePlayer { PlayerId = Player4Guid }
                 },
+                QualityAverage = 77.77,
                 GroupMatches = new List<GroupMatch>
                 {
                     CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 0),
@@ -378,6 +391,7 @@ namespace EndGroupStageFunction.Tests
                     new FixturePlayer { PlayerId = Player3Guid },
                     new FixturePlayer { PlayerId = Player4Guid }
                 },
+                QualityAverage = 70.21,
                 GroupMatches = new List<GroupMatch>
                 {
                     CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 0),
@@ -403,6 +417,7 @@ namespace EndGroupStageFunction.Tests
                     new FixturePlayer { PlayerId = Player3Guid },
                     new FixturePlayer { PlayerId = Player4Guid }
                 },
+                QualityAverage = 70.94,
                 GroupMatches = new List<GroupMatch>
                 {
                     CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 0),
@@ -428,6 +443,7 @@ namespace EndGroupStageFunction.Tests
                     new FixturePlayer { PlayerId = Player3Guid },
                     new FixturePlayer { PlayerId = Player4Guid }
                 },
+                QualityAverage = 74.57,
                 GroupMatches = new List<GroupMatch>
                 {
                     CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 1),
@@ -453,6 +469,7 @@ namespace EndGroupStageFunction.Tests
                     new FixturePlayer { PlayerId = Player3Guid },
                     new FixturePlayer { PlayerId = Player4Guid }
                 },
+                QualityAverage = 70.21,
                 GroupMatches = new List<GroupMatch>
                 {
                     CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 0),

@@ -18,7 +18,7 @@ namespace TTT.DomainModel.Entities
         public Guid FixtureId { get; set; }
         public DateTime? Date { get; set; }
         public string Location { get; set; }
-        public double QualityAverage { get; private set; }
+        public double QualityAverage { get; set; }
         public FixtureState State { get; set; }
         public FixtureType Type { get; set; }
         public List<FixturePlayer> Players { get; set; }
@@ -96,7 +96,7 @@ namespace TTT.DomainModel.Entities
     {
         public Guid PlayerId { get; set; }
         public string PlayerName { get; set; }
-        public int? Rank { get; set; }
-        public double? Score { get; set; }
+        public int Rank { get; set; }
+        public double Score { get; set; }
     }
 }

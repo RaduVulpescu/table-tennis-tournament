@@ -56,17 +56,17 @@ namespace EndGroupStageFunction
                 };
             }
 
-            var numberOfGroups = fixture.GroupMatches.GroupBy(gm => gm.Group).Count();
-            switch (numberOfGroups)
+            var groups = fixture.GroupMatches.GroupBy(gm => gm.Group).Select(x => x.Key).ToArray();
+            switch (groups.Length)
             {
                 case 1:
                     HandleOneGroupEnding(fixture);
                     break;
                 case 2:
-                    HandleTwoGroupsEnding(fixture);
+                    HandleTwoGroupsEnding(fixture, groups);
                     break;
                 case 4:
-                    HandleFourGroupsEnding(fixture);
+                    HandleFourGroupsEnding(fixture, groups);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -80,34 +80,72 @@ namespace EndGroupStageFunction
             };
         }
 
+        // ReSharper disable once PossibleLossOfFraction    
         private static void HandleOneGroupEnding(SeasonFixture fixture)
         {
             fixture.Ranking = new List<FixturePlayerRank>();
 
             EndGroup(fixture.Players, fixture.GroupMatches);
+            var orderedPlayers = fixture.Players.OrderByDescending(p => p.GroupRank).ToArray();
+
+            var score = fixture.QualityAverage - (orderedPlayers.Length - 1) / 2;
+
+            var i = 0;
+            for (; i < orderedPlayers.Length - 1; i++)
+            {
+                fixture.Ranking.Add(new FixturePlayerRank
+                {
+                    PlayerId = orderedPlayers[i].PlayerId,
+                    PlayerName = orderedPlayers[i].Name,
+                    Rank = orderedPlayers[i].GroupRank!.Value,
+                    Score = score
+                });
+
+                score += 1;
+            }
+
+            fixture.Ranking.Add(new FixturePlayerRank
+            {
+                PlayerId = orderedPlayers[i].PlayerId,
+                PlayerName = orderedPlayers[i].Name,
+                Rank = orderedPlayers[i].GroupRank!.Value,
+                Score = score + 1
+            });
 
             fixture.State = FixtureState.Finished;
         }
 
-        private static void HandleTwoGroupsEnding(SeasonFixture fixture)
+        private static void HandleTwoGroupsEnding(SeasonFixture fixture, IEnumerable<Group> groups)
         {
+            foreach (var group in groups)
+            {
+                EndGroup(fixture.Players, fixture.GroupMatches.Where(gm => gm.Group == group).ToList());
+            }
+
             fixture.DeciderMatches = new List<DeciderMatch>();
+
             fixture.State = FixtureState.DecidersStage;
         }
 
-        private static void HandleFourGroupsEnding(SeasonFixture fixture)
+        private static void HandleFourGroupsEnding(SeasonFixture fixture, IEnumerable<Group> groups)
         {
+            foreach (var group in groups)
+            {
+                EndGroup(fixture.Players, fixture.GroupMatches.Where(gm => gm.Group == group).ToList());
+            }
+
             fixture.DeciderMatches = new List<DeciderMatch>();
+
             fixture.State = FixtureState.DecidersStage;
         }
 
-        private static void EndGroup(IEnumerable<FixturePlayer> fixturePlayers, IReadOnlyCollection<GroupMatch> allGroupMatches)
+        private static void EndGroup(IEnumerable<FixturePlayer> fixturePlayers, IReadOnlyCollection<GroupMatch> groupMatches)
         {
-            var groupPlayers = fixturePlayers.Where(fp => allGroupMatches.Any(gm =>
+            var groupPlayers = fixturePlayers.Where(fp => groupMatches.Any(gm =>
                 gm.PlayerOneStats.PlayerId == fp.PlayerId || gm.PlayerTwoStats.PlayerId == fp.PlayerId));
 
             var victoryPerformances = groupPlayers
-                    .Select(player => new PlayerPerformance(player, allGroupMatches.Count(IsWinner(player))))
+                    .Select(player => new PlayerPerformance(player, groupMatches.Count(IsWinner(player))))
                     .OrderByDescending(a => a.Factor).ToArray();
 
             var decidedRank = 1;
@@ -134,7 +172,7 @@ namespace EndGroupStageFunction
                     (i + 1 == victoryPerformances.Length - 1 ||              // if nextPlayer is last player
                      nextPlayer.Factor > victoryPerformances[i + 2].Factor)) // if nextPlayer has more factor than player after him
                 {
-                    decidedRank = ResolveTieBetweenTwoPlayers(allGroupMatches, currentPlayer, nextPlayer, decidedRank);
+                    decidedRank = ResolveTieBetweenTwoPlayers(groupMatches, currentPlayer, nextPlayer, decidedRank);
                     i++;
                     continue;
                 }
@@ -147,7 +185,7 @@ namespace EndGroupStageFunction
                     i++;
                 } while (i < victoryPerformances.Length - 1 && victoryPerformances[i].Factor == victoryPerformances[i + 1].Factor);
 
-                decidedRank = ResolveBarrage(barragePlayers, allGroupMatches, decidedRank);
+                decidedRank = ResolveBarrage(barragePlayers, groupMatches, decidedRank);
             }
         }
 
@@ -244,9 +282,9 @@ namespace EndGroupStageFunction
             return decidedRank;
         }
 
-        private static int GetSetsDifference(IEnumerable<GroupMatch> partialMatches, FixturePlayer player)
+        private static int GetSetsDifference(IEnumerable<GroupMatch> groupMatches, FixturePlayer player)
         {
-            return partialMatches.Where(groupMatch =>
+            return groupMatches.Where(groupMatch =>
                     groupMatch.PlayerOneStats.PlayerId == player.PlayerId ||
                     groupMatch.PlayerTwoStats.PlayerId == player.PlayerId)
                 .Sum(groupMatch => groupMatch.PlayerOneStats.PlayerId == player.PlayerId
@@ -254,7 +292,8 @@ namespace EndGroupStageFunction
                     : groupMatch.PlayerTwoStats.SetsWon!.Value - groupMatch.PlayerOneStats.SetsWon!.Value);
         }
 
-        private static int ResolveCompleteBarrage(FixturePlayer[] completeBarragePlayers, IReadOnlyCollection<GroupMatch> allGroupMatches, int decidedRank)
+        private static int ResolveCompleteBarrage(IReadOnlyCollection<FixturePlayer> completeBarragePlayers,
+            IReadOnlyCollection<GroupMatch> allGroupMatches, int decidedRank)
         {
             var playerToSetDifference = completeBarragePlayers
                 .Select(player => new PlayerPerformance(player, GetSetsDifference(allGroupMatches, player)))
@@ -288,7 +327,7 @@ namespace EndGroupStageFunction
                 }
 
                 var random = new Random();
-                var remainingRanks = Enumerable.Range(decidedRank, completeBarragePlayers.Length).ToList();
+                var remainingRanks = Enumerable.Range(decidedRank, completeBarragePlayers.Count).ToList();
                 foreach (var player in completeBarragePlayers)
                 {
                     var coinFlipIndex = random.Next(remainingRanks.Count);
@@ -296,9 +335,11 @@ namespace EndGroupStageFunction
                     remainingRanks.RemoveAt(coinFlipIndex);
 
                     player.GroupRank = coinFlipRank;
-                    i++;
                     decidedRank++;
+                    i++;
                 }
+
+                i--; // current player is incremented one more time in the previous foreach loop
             }
 
             return decidedRank;
