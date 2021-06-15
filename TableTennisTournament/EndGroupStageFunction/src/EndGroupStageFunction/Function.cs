@@ -238,7 +238,7 @@ namespace EndGroupStageFunction
                     i++;
                 } while (i < playerToSetDifference.Length - 1 && playerToSetDifference[i].Factor == playerToSetDifference[i + 1].Factor);
 
-                decidedRank = ResolveCompleteBarrage(completeBarragePlayers, allGroupMatches, decidedRank);
+                decidedRank = ResolveCompleteBarrage(completeBarragePlayers.ToArray(), allGroupMatches, decidedRank);
             }
 
             return decidedRank;
@@ -254,7 +254,7 @@ namespace EndGroupStageFunction
                     : groupMatch.PlayerTwoStats.SetsWon!.Value - groupMatch.PlayerOneStats.SetsWon!.Value);
         }
 
-        private static int ResolveCompleteBarrage(IEnumerable<FixturePlayer> completeBarragePlayers, IReadOnlyCollection<GroupMatch> allGroupMatches, int decidedRank)
+        private static int ResolveCompleteBarrage(FixturePlayer[] completeBarragePlayers, IReadOnlyCollection<GroupMatch> allGroupMatches, int decidedRank)
         {
             var playerToSetDifference = completeBarragePlayers
                 .Select(player => new PlayerPerformance(player, GetSetsDifference(allGroupMatches, player)))
@@ -287,7 +287,18 @@ namespace EndGroupStageFunction
                     continue;
                 }
 
-                throw new NotImplementedException();
+                var random = new Random();
+                var remainingRanks = Enumerable.Range(decidedRank, completeBarragePlayers.Length).ToList();
+                foreach (var player in completeBarragePlayers)
+                {
+                    var coinFlipIndex = random.Next(remainingRanks.Count);
+                    var coinFlipRank = remainingRanks[coinFlipIndex];
+                    remainingRanks.RemoveAt(coinFlipIndex);
+
+                    player.GroupRank = coinFlipRank;
+                    i++;
+                    decidedRank++;
+                }
             }
 
             return decidedRank;

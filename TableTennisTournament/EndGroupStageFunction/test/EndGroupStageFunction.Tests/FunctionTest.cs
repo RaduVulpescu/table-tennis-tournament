@@ -51,6 +51,10 @@ namespace EndGroupStageFunction.Tests
                 .ReturnsAsync(CreateThreeManCompleteBarrageFixtureWithNoTie());
 
             _seasonRepositoryMock
+                .Setup(x => x.LoadFixtureAsync(It.IsAny<string>(), "CreateThreeManPerfectTie"))
+                .ReturnsAsync(CreateThreeManPerfectTie());
+
+            _seasonRepositoryMock
                 .Setup(x => x.SaveAsync(It.IsAny<SeasonFixture>()))
                 .Returns(Task.CompletedTask);
 
@@ -240,6 +244,40 @@ namespace EndGroupStageFunction.Tests
             Assert.Equal((int)HttpStatusCode.OK, actualResponse.StatusCode);
         }
 
+        [Fact]
+        public async Task TBA_7()
+        {
+            // Arrange
+            var request = new APIGatewayHttpApiV2ProxyRequest
+            {
+                PathParameters = new Dictionary<string, string>
+                {
+                    { "seasonId", "" }, { "fixtureId", "CreateThreeManPerfectTie" }
+                }
+            };
+
+            // Act
+            var actualResponse = await _sutFunction.FunctionHandler(request, _testContext);
+
+            // Assert
+            _seasonRepositoryMock.Verify(x => x.LoadFixtureAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _seasonRepositoryMock.Verify(x => x.SaveAsync(It.Is<SeasonFixture>(f =>
+                f.State == FixtureState.Finished &&
+                f.Players.Any(fp => fp.PlayerId == Player1Guid && fp.GroupRank == 1) &&
+                f.Players.Single(p => p.PlayerId == Player2Guid).GroupRank.HasValue &&
+                f.Players.Single(p => p.PlayerId == Player3Guid).GroupRank.HasValue &&
+                f.Players.Single(p => p.PlayerId == Player4Guid).GroupRank.HasValue &&
+                f.Players.Single(p => p.PlayerId == Player2Guid).GroupRank != f.Players.Single(p => p.PlayerId == Player3Guid).GroupRank &&
+                f.Players.Single(p => p.PlayerId == Player3Guid).GroupRank != f.Players.Single(p => p.PlayerId == Player4Guid).GroupRank &&
+                f.Players.Single(p => p.PlayerId == Player4Guid).GroupRank != f.Players.Single(p => p.PlayerId == Player2Guid).GroupRank
+            )), Times.Once);
+
+            _seasonRepositoryMock.VerifyNoOtherCalls();
+
+            Assert.Equal((int)HttpStatusCode.OK, actualResponse.StatusCode);
+        }
+
+
         private static readonly Guid Player1Guid = Guid.Parse("E738582B-74CB-46B7-9EAB-6ADDEA6E48AC");
         private static readonly Guid Player2Guid = Guid.Parse("B0FB4E6D-A39D-436B-9F0A-AEB703681998");
         private static readonly Guid Player3Guid = Guid.Parse("E6FCD455-EAE1-44BB-9552-202F147AAE4F");
@@ -400,6 +438,31 @@ namespace EndGroupStageFunction.Tests
                     CreateGroupMatch(Group.A, Player2Guid, Player4Guid, 3, 2),
 
                     CreateGroupMatch(Group.A, Player3Guid, Player4Guid, 2, 3),
+                }
+            };
+        }
+
+        private static SeasonFixture CreateThreeManPerfectTie()
+        {
+            return new SeasonFixture
+            {
+                Players = new List<FixturePlayer>
+                {
+                    new FixturePlayer { PlayerId = Player1Guid },
+                    new FixturePlayer { PlayerId = Player2Guid },
+                    new FixturePlayer { PlayerId = Player3Guid },
+                    new FixturePlayer { PlayerId = Player4Guid }
+                },
+                GroupMatches = new List<GroupMatch>
+                {
+                    CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 0),
+                    CreateGroupMatch(Group.A, Player1Guid, Player3Guid, 3, 0),
+                    CreateGroupMatch(Group.A, Player1Guid, Player4Guid, 3, 0),
+
+                    CreateGroupMatch(Group.A, Player2Guid, Player3Guid, 0, 3),
+                    CreateGroupMatch(Group.A, Player2Guid, Player4Guid, 3, 0),
+
+                    CreateGroupMatch(Group.A, Player3Guid, Player4Guid, 0, 3),
                 }
             };
         }
