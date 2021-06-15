@@ -42,7 +42,6 @@ namespace TTT.DomainModel.Entities
                 Type = type,
                 Pyramids = new List<Pyramid>(),
                 GroupMatches = new List<GroupMatch>(),
-                DeciderMatches = new List<DeciderMatch>(),
                 Ranking = new List<FixturePlayerRank>()
             };
 
@@ -75,6 +74,7 @@ namespace TTT.DomainModel.Entities
         public Guid PlayerId { get; set; }
         public string Name { get; set; }
         public double? Quality { get; set; }
+        public int? GroupRank { get; set; }
     }
 
     public class GroupMatch

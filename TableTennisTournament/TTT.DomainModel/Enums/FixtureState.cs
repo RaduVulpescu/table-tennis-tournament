@@ -5,7 +5,7 @@
         Upcoming,
         GroupsSelection,
         GroupsStage,
-        PyramidsStage,
+        DecidersStage,
         Finished
     }
 }
