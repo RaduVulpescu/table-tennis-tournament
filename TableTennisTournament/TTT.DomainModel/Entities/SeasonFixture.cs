@@ -23,7 +23,7 @@ namespace TTT.DomainModel.Entities
         public FixtureType Type { get; set; }
         public List<FixturePlayer> Players { get; set; }
         public List<GroupMatch> GroupMatches { get; set; }
-        public List<DeciderMatch> DeciderMatches { get; set; }
+        public List<Match> DeciderMatches { get; set; }
         public List<Pyramid> Pyramids { get; set; }
         public List<FixturePlayerRank> Ranking { get; set; }
 
@@ -77,15 +77,12 @@ namespace TTT.DomainModel.Entities
         public int? GroupRank { get; set; }
     }
 
-    public class GroupMatch
+    public class GroupMatch : Match
     {
-        public Guid MatchId { get; set; }
         public Group Group { get; set; }
-        public PlayerMatchStats PlayerOneStats { get; set; }
-        public PlayerMatchStats PlayerTwoStats { get; set; }
     }
 
-    public class DeciderMatch
+    public class Match
     {
         public Guid MatchId { get; set; }
         public PlayerMatchStats PlayerOneStats { get; set; }

@@ -56,6 +56,8 @@ namespace EndGroupStageFunction
                 };
             }
 
+            fixture.Ranking = new List<FixturePlayerRank>();
+
             var groups = fixture.GroupMatches.GroupBy(gm => gm.Group).Select(x => x.Key).ToArray();
             switch (groups.Length)
             {
@@ -83,8 +85,6 @@ namespace EndGroupStageFunction
         // ReSharper disable once PossibleLossOfFraction    
         private static void HandleOneGroupEnding(SeasonFixture fixture)
         {
-            fixture.Ranking = new List<FixturePlayerRank>();
-
             EndGroup(fixture.Players, fixture.GroupMatches);
             var orderedPlayers = fixture.Players.OrderByDescending(p => p.GroupRank).ToArray();
 
@@ -122,9 +122,77 @@ namespace EndGroupStageFunction
                 EndGroup(fixture.Players, fixture.GroupMatches.Where(gm => gm.Group == group).ToList());
             }
 
-            fixture.DeciderMatches = new List<DeciderMatch>();
+            CreateDecidersForTwoGroups(fixture);
 
             fixture.State = FixtureState.DecidersStage;
+        }
+
+        private static void CreateDecidersForTwoGroups(SeasonFixture fixture)
+        {
+            fixture.DeciderMatches = new List<Match>();
+
+            var groupsAndMatches = fixture.GroupMatches.GroupBy(x => x.Group);
+
+            var groupsAndPlayers = (from @group in groupsAndMatches
+                let groupPlayers = fixture.Players.Where(fp =>
+                    @group.Select(x => x.PlayerOneStats.PlayerId).Contains(fp.PlayerId) ||
+                    @group.Select(x => x.PlayerTwoStats.PlayerId).Contains(fp.PlayerId)).ToList()
+                select new Tuple<Group, List<FixturePlayer>>(@group.Key, groupPlayers)).ToList();
+
+            var groupA = groupsAndPlayers
+                .Single(gp => gp.Item1 == Group.A).Item2
+                .OrderBy(player => player.GroupRank)
+                .ToArray();
+
+            var groupB = groupsAndPlayers
+                .Single(gp => gp.Item1 == Group.B).Item2
+                .OrderBy(player => player.GroupRank)
+                .ToArray();
+
+            var i = 0;
+            for (; i < groupA.Length && i < groupB.Length; i++)
+            {
+                var groupAPlayer = groupA[0];
+                var groupBPlayer = groupB[0];
+
+                var matchId = Guid.NewGuid();
+
+                fixture.DeciderMatches.Add(new Match
+                {
+                    MatchId = matchId,
+                    PlayerOneStats = new PlayerMatchStats
+                    {
+                        PlayerId = groupAPlayer.PlayerId,
+                        PlayerName = groupAPlayer.Name
+                    },
+                    PlayerTwoStats = new PlayerMatchStats
+                    {
+                        PlayerId = groupBPlayer.PlayerId,
+                        PlayerName = groupBPlayer.Name
+                    }
+                });
+            }
+
+            if (groupA.Length > groupB.Length)
+            {
+                fixture.Ranking.Add(new FixturePlayerRank
+                {
+                    PlayerId = groupA[i].PlayerId,
+                    PlayerName = groupA[i].Name,
+                    Rank = fixture.Players.Count,
+                    Score = fixture.QualityAverage - (fixture.Players.Count - 1) / 2
+                });
+            }
+            else if (groupA.Length < groupB.Length)
+            {
+                fixture.Ranking.Add(new FixturePlayerRank
+                {
+                    PlayerId = groupB[i].PlayerId,
+                    PlayerName = groupB[i].Name,
+                    Rank = fixture.Players.Count,
+                    Score = fixture.QualityAverage - (fixture.Players.Count - 1) / 2
+                });
+            }
         }
 
         private static void HandleFourGroupsEnding(SeasonFixture fixture, IEnumerable<Group> groups)
@@ -134,7 +202,7 @@ namespace EndGroupStageFunction
                 EndGroup(fixture.Players, fixture.GroupMatches.Where(gm => gm.Group == group).ToList());
             }
 
-            fixture.DeciderMatches = new List<DeciderMatch>();
+            fixture.DeciderMatches = new List<Match>();
 
             fixture.State = FixtureState.DecidersStage;
         }
