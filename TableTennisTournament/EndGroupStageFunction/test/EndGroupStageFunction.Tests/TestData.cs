@@ -228,6 +228,7 @@ namespace EndGroupStageFunction.Tests
                     new FixturePlayer { PlayerId = Player8Guid },
                     new FixturePlayer { PlayerId = Player9Guid }
                 },
+                QualityAverage = 75.24,
                 GroupMatches = new List<GroupMatch>
                 {
                     CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 0),

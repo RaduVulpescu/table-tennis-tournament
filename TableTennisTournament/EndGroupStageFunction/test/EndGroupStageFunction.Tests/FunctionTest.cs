@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -64,7 +65,7 @@ namespace EndGroupStageFunction.Tests
             _seasonRepositoryMock
                 .Setup(x => x.SaveAsync(It.IsAny<SeasonFixture>()))
                 .Returns(Task.CompletedTask);
-            
+
             _sutFunction = new Function(_seasonRepositoryMock.Object, _playerRepositoryMock.Object);
             _testContext = new TestLambdaContext();
         }
@@ -315,13 +316,33 @@ namespace EndGroupStageFunction.Tests
                 f.Players.Any(fp => fp.PlayerId == TestData.Player1Guid && fp.GroupRank == 1) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player2Guid && fp.GroupRank == 2) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player3Guid && fp.GroupRank == 3) &&
-                f.Players.Any(fp => fp.PlayerId == TestData.Player4Guid && fp.GroupRank == 5) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player5Guid && fp.GroupRank == 4) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player4Guid && fp.GroupRank == 5) &&
 
                 f.Players.Any(fp => fp.PlayerId == TestData.Player6Guid && fp.GroupRank == 1) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player7Guid && fp.GroupRank == 2) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player8Guid && fp.GroupRank == 3) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player9Guid && fp.GroupRank == 4) &&
+
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player1Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player6Guid &&
+                    dm.Depth == 0 && dm.Pyramid == PyramidType.Ranks_1_2) &&
+
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player2Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player7Guid &&
+                    dm.Depth == 0 && dm.Pyramid == PyramidType.Ranks_3_4) &&
+
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player3Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player8Guid &&
+                    dm.Depth == 0 && dm.Pyramid == PyramidType.Ranks_5_6) &&
+
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player5Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player9Guid &&
+                    dm.Depth == 0 && dm.Pyramid == PyramidType.Ranks_7_8) &&
 
                 f.Ranking.Any(f => f.PlayerId == TestData.Player4Guid && f.Rank == 9 && f.Score == 71.24)
 
@@ -371,15 +392,45 @@ namespace EndGroupStageFunction.Tests
                 f.Players.Any(fp => fp.PlayerId == TestData.Player15Guid && fp.GroupRank == 3) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player16Guid && fp.GroupRank == 4) &&
 
-                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player1Guid && dm.PlayerTwoStats.PlayerId == TestData.Player14Guid) &&
-                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player9Guid && dm.PlayerTwoStats.PlayerId == TestData.Player6Guid) &&
-                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player5Guid && dm.PlayerTwoStats.PlayerId == TestData.Player10Guid) &&
-                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player13Guid && dm.PlayerTwoStats.PlayerId == TestData.Player2Guid) &&
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player1Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player14Guid &&
+                    dm.Depth == 2 && dm.Pyramid == PyramidType.Ranks_1_2) &&
 
-                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player3Guid && dm.PlayerTwoStats.PlayerId == TestData.Player16Guid) &&
-                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player11Guid && dm.PlayerTwoStats.PlayerId == TestData.Player8Guid) &&
-                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player7Guid && dm.PlayerTwoStats.PlayerId == TestData.Player12Guid) &&
-                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player15Guid && dm.PlayerTwoStats.PlayerId == TestData.Player4Guid)
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player9Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player6Guid &&
+                    dm.Depth == 2 && dm.Pyramid == PyramidType.Ranks_1_2) &&
+
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player5Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player10Guid &&
+                    dm.Depth == 2 && dm.Pyramid == PyramidType.Ranks_1_2) &&
+
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player13Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player2Guid &&
+                    dm.Depth == 2 && dm.Pyramid == PyramidType.Ranks_1_2) &&
+
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player3Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player16Guid &&
+                    dm.Depth == 2 && dm.Pyramid == PyramidType.Ranks_9_10) &&
+
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player11Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player8Guid &&
+                    dm.Depth == 2 && dm.Pyramid == PyramidType.Ranks_9_10) &&
+
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player7Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player12Guid &&
+                    dm.Depth == 2 && dm.Pyramid == PyramidType.Ranks_9_10) &&
+
+                f.DeciderMatches.Any(dm =>
+                    dm.PlayerOneStats.PlayerId == TestData.Player15Guid &&
+                    dm.PlayerTwoStats.PlayerId == TestData.Player4Guid &&
+                    dm.Depth == 2 && dm.Pyramid == PyramidType.Ranks_9_10)
 
             )), Times.Once);
 

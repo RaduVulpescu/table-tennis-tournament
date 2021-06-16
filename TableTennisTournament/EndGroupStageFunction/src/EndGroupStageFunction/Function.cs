@@ -139,6 +139,7 @@ namespace EndGroupStageFunction
             fixture.State = FixtureState.DecidersStage;
         }
 
+        // ReSharper disable twice PossibleLossOfFraction
         private static void CreateDecidersForTwoGroups(SeasonFixture fixture)
         {
             fixture.DeciderMatches = new List<DeciderMatch>();
@@ -151,25 +152,8 @@ namespace EndGroupStageFunction
             var i = 0;
             for (; i < groupA.Length && i < groupB.Length; i++)
             {
-                var groupAPlayer = groupA[0];
-                var groupBPlayer = groupB[0];
-
                 var matchId = Guid.NewGuid();
-
-                fixture.DeciderMatches.Add(new DeciderMatch
-                {
-                    MatchId = matchId,
-                    PlayerOneStats = new PlayerMatchStats
-                    {
-                        PlayerId = groupAPlayer.PlayerId,
-                        PlayerName = groupAPlayer.Name
-                    },
-                    PlayerTwoStats = new PlayerMatchStats
-                    {
-                        PlayerId = groupBPlayer.PlayerId,
-                        PlayerName = groupBPlayer.Name
-                    }
-                });
+                fixture.DeciderMatches.Add(DeciderMatch.Create(matchId, (PyramidType)i, 0, groupA[i], groupB[i]));
             }
 
             if (groupA.Length > groupB.Length)
