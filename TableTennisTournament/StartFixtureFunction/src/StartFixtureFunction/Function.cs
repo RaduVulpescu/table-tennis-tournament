@@ -9,7 +9,6 @@ using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using TTT.DomainModel.Entities;
 using TTT.DomainModel.Enums;
-using TTT.Players.Repository;
 using TTT.Seasons.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -18,18 +17,15 @@ namespace StartFixtureFunction
     public class Function : BaseFunction
     {
         private readonly ISeasonRepository _seasonRepository;
-        private readonly IPlayerRepository _playerRepository;
 
         public Function()
         {
             _seasonRepository = ServiceProvider.GetService<ISeasonRepository>();
-            _playerRepository = ServiceProvider.GetService<IPlayerRepository>();
         }
 
-        public Function(ISeasonRepository seasonRepository, IPlayerRepository playerRepository)
+        public Function(ISeasonRepository seasonRepository)
         {
             _seasonRepository = seasonRepository;
-            _playerRepository = playerRepository;
         }
 
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
@@ -105,7 +101,7 @@ namespace StartFixtureFunction
             FillGroupWithPlayers(fixture, groupDPlayers, Group.D);
         }
 
-        private void FillGroupWithPlayers(SeasonFixture fixture, IReadOnlyList<FixturePlayer> fixturePlayers, Group group)
+        private static void FillGroupWithPlayers(SeasonFixture fixture, IReadOnlyList<FixturePlayer> fixturePlayers, Group group)
         {
             for (var i = 0; i < fixturePlayers.Count; i++)
             {
@@ -131,22 +127,6 @@ namespace StartFixtureFunction
                             PlayerName = playerTwo.Name
                         }
                     });
-
-                    _playerRepository.SaveAsync(PlayerMatch.Create(
-                        matchId,
-                        playerOne.PlayerId,
-                        playerTwo.PlayerId,
-                        playerOne.Name,
-                        playerTwo.Name
-                    ));
-
-                    _playerRepository.SaveAsync(PlayerMatch.Create(
-                        matchId,
-                        playerTwo.PlayerId,
-                        playerOne.PlayerId,
-                        playerTwo.Name,
-                        playerOne.Name
-                    ));
                 }
             }
         }

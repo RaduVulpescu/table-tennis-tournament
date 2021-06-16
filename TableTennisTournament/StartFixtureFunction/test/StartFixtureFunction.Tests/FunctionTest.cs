@@ -7,7 +7,6 @@ using Amazon.Lambda.TestUtilities;
 using Moq;
 using TTT.DomainModel.Entities;
 using TTT.DomainModel.Enums;
-using TTT.Players.Repository;
 using TTT.Seasons.Repository;
 using Xunit;
 
@@ -16,7 +15,6 @@ namespace StartFixtureFunction.Tests
     public class FunctionTest
     {
         private readonly Mock<ISeasonRepository> _seasonRepositoryMock;
-        private readonly Mock<IPlayerRepository> _playerRepositoryMock;
         private readonly Function _sutFunction;
         private readonly TestLambdaContext _testContext;
 
@@ -25,7 +23,6 @@ namespace StartFixtureFunction.Tests
         public FunctionTest()
         {
             _seasonRepositoryMock = new Mock<ISeasonRepository>();
-            _playerRepositoryMock = new Mock<IPlayerRepository>();
 
             _seasonRepositoryMock
                 .Setup(x => x.LoadFixtureAsync(Players8.ToString(), It.IsAny<string>()))
@@ -43,7 +40,7 @@ namespace StartFixtureFunction.Tests
                 .Setup(x => x.SaveAsync(It.IsAny<SeasonFixture>()))
                 .Returns(Task.CompletedTask);
 
-            _sutFunction = new Function(_seasonRepositoryMock.Object, _playerRepositoryMock.Object);
+            _sutFunction = new Function(_seasonRepositoryMock.Object);
             _testContext = new TestLambdaContext();
         }
 

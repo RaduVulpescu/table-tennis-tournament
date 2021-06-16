@@ -94,6 +94,12 @@ namespace TTT.AWS.Resources
             var patchGroupMatchFunction = CreateFunction("patch-group-match-function", "PatchGroupMatchFunction");
             table.GrantDescribeReadWriteData(patchGroupMatchFunction);
 
+            var endGroupFunction = CreateFunction("end-group-function", "EndGroupFunction");
+            table.GrantDescribeReadWriteData(endGroupFunction);
+
+            var patchDeciderMatchFunction = CreateFunction("patch-decider-match-function", "PatchDeciderMatchFunction");
+            table.GrantDescribeReadWriteData(patchDeciderMatchFunction);
+
             var httpApi = new HttpApi(this, "ttt-http-api", new HttpApiProps
             {
                 ApiName = "ttt-api"
@@ -232,6 +238,26 @@ namespace TTT.AWS.Resources
             httpApi.AddRoutes(new AddRoutesOptions
             {
                 Path = "/seasons/{seasonId}/fixtures/{fixtureId}/groupMatches/{matchId}",
+                Methods = new[] { HttpMethod.PATCH },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = patchGroupMatchFunction
+                })
+            });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/seasons/{seasonId}/fixtures/{fixtureId}/endGroup",
+                Methods = new[] { HttpMethod.POST },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = patchGroupMatchFunction
+                })
+            });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/seasons/{seasonId}/fixtures/{fixtureId}/deciderMatches/{matchId}",
                 Methods = new[] { HttpMethod.PATCH },
                 Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
                 {

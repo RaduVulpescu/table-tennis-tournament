@@ -9,7 +9,6 @@ using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using TTT.DomainModel.Entities;
 using TTT.DomainModel.Enums;
-using TTT.Players.Repository;
 using TTT.Seasons.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -18,18 +17,15 @@ namespace EndGroupStageFunction
     public class Function : BaseFunction
     {
         private readonly ISeasonRepository _seasonRepository;
-        private readonly IPlayerRepository _playerRepository;
 
         public Function()
         {
             _seasonRepository = ServiceProvider.GetService<ISeasonRepository>();
-            _playerRepository = ServiceProvider.GetService<IPlayerRepository>();
         }
 
-        public Function(ISeasonRepository seasonRepository, IPlayerRepository playerRepository)
+        public Function(ISeasonRepository seasonRepository)
         {
             _seasonRepository = seasonRepository;
-            _playerRepository = playerRepository;
         }
 
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)

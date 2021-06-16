@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,7 +7,6 @@ using Amazon.Lambda.TestUtilities;
 using Moq;
 using TTT.DomainModel.Entities;
 using TTT.DomainModel.Enums;
-using TTT.Players.Repository;
 using TTT.Seasons.Repository;
 using Xunit;
 
@@ -17,14 +15,12 @@ namespace EndGroupStageFunction.Tests
     public class FunctionTest
     {
         private readonly Mock<ISeasonRepository> _seasonRepositoryMock;
-        private readonly Mock<IPlayerRepository> _playerRepositoryMock;
         private readonly Function _sutFunction;
         private readonly TestLambdaContext _testContext;
 
         public FunctionTest()
         {
             _seasonRepositoryMock = new Mock<ISeasonRepository>();
-            _playerRepositoryMock = new Mock<IPlayerRepository>();
 
             _seasonRepositoryMock
                 .Setup(x => x.LoadFixtureAsync(It.IsAny<string>(), "CreateOrderedFourPlayersGroupFixture"))
@@ -66,7 +62,7 @@ namespace EndGroupStageFunction.Tests
                 .Setup(x => x.SaveAsync(It.IsAny<SeasonFixture>()))
                 .Returns(Task.CompletedTask);
 
-            _sutFunction = new Function(_seasonRepositoryMock.Object, _playerRepositoryMock.Object);
+            _sutFunction = new Function(_seasonRepositoryMock.Object);
             _testContext = new TestLambdaContext();
         }
 
