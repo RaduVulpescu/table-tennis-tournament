@@ -127,27 +127,26 @@ namespace EndGroupStageFunction
             fixture.State = FixtureState.DecidersStage;
         }
 
+        private static void HandleFourGroupsEnding(SeasonFixture fixture, IEnumerable<Group> groups)
+        {
+            foreach (var group in groups)
+            {
+                EndGroup(fixture.Players, fixture.GroupMatches.Where(gm => gm.Group == group).ToList());
+            }
+
+            CreateDecidersForFourGroups(fixture);
+
+            fixture.State = FixtureState.DecidersStage;
+        }
+
         private static void CreateDecidersForTwoGroups(SeasonFixture fixture)
         {
             fixture.DeciderMatches = new List<Match>();
 
-            var groupsAndMatches = fixture.GroupMatches.GroupBy(x => x.Group);
+            var groupsAndPlayers = GetGroupsAndPlayers(fixture);
 
-            var groupsAndPlayers = (from @group in groupsAndMatches
-                let groupPlayers = fixture.Players.Where(fp =>
-                    @group.Select(x => x.PlayerOneStats.PlayerId).Contains(fp.PlayerId) ||
-                    @group.Select(x => x.PlayerTwoStats.PlayerId).Contains(fp.PlayerId)).ToList()
-                select new Tuple<Group, List<FixturePlayer>>(@group.Key, groupPlayers)).ToList();
-
-            var groupA = groupsAndPlayers
-                .Single(gp => gp.Item1 == Group.A).Item2
-                .OrderBy(player => player.GroupRank)
-                .ToArray();
-
-            var groupB = groupsAndPlayers
-                .Single(gp => gp.Item1 == Group.B).Item2
-                .OrderBy(player => player.GroupRank)
-                .ToArray();
+            var groupA = GetGroupPlayers(groupsAndPlayers, Group.A);
+            var groupB = GetGroupPlayers(groupsAndPlayers, Group.B);
 
             var i = 0;
             for (; i < groupA.Length && i < groupB.Length; i++)
@@ -195,16 +194,40 @@ namespace EndGroupStageFunction
             }
         }
 
-        private static void HandleFourGroupsEnding(SeasonFixture fixture, IEnumerable<Group> groups)
+        private static void CreateDecidersForFourGroups(SeasonFixture fixture)
         {
-            foreach (var group in groups)
-            {
-                EndGroup(fixture.Players, fixture.GroupMatches.Where(gm => gm.Group == group).ToList());
-            }
-
             fixture.DeciderMatches = new List<Match>();
 
-            fixture.State = FixtureState.DecidersStage;
+            var groupsAndPlayers = GetGroupsAndPlayers(fixture);
+
+            var groupA = GetGroupPlayers(groupsAndPlayers, Group.A);
+            var groupB = GetGroupPlayers(groupsAndPlayers, Group.B);
+            var groupC = GetGroupPlayers(groupsAndPlayers, Group.C);
+            var groupD = GetGroupPlayers(groupsAndPlayers, Group.D);
+
+            
+        }
+
+        private static List<Tuple<Group, List<FixturePlayer>>> GetGroupsAndPlayers(SeasonFixture fixture)
+        {
+            var groupsAndMatches = fixture.GroupMatches.GroupBy(x => x.Group);
+
+            var groupsAndPlayers =
+                (from @group in groupsAndMatches
+                    let groupPlayers = fixture.Players.Where(fp =>
+                        @group.Select(x => x.PlayerOneStats.PlayerId).Contains(fp.PlayerId) ||
+                        @group.Select(x => x.PlayerTwoStats.PlayerId).Contains(fp.PlayerId)).ToList()
+                    select new Tuple<Group, List<FixturePlayer>>(@group.Key, groupPlayers)).ToList();
+
+            return groupsAndPlayers;
+        }
+
+        private static FixturePlayer[] GetGroupPlayers(IEnumerable<Tuple<Group, List<FixturePlayer>>> groupsAndPlayers, Group group)
+        {
+            return groupsAndPlayers
+                .Single(gp => gp.Item1 == group).Item2
+                .OrderBy(player => player.GroupRank)
+                .ToArray();
         }
 
         private static void EndGroup(IEnumerable<FixturePlayer> fixturePlayers, IReadOnlyCollection<GroupMatch> groupMatches)
