@@ -58,9 +58,13 @@ namespace EndGroupStageFunction.Tests
                 .ReturnsAsync(TestData.CreateTwoOrderedFourPlayersGroupFixture());
 
             _seasonRepositoryMock
+                .Setup(x => x.LoadFixtureAsync(It.IsAny<string>(), "CreateFourGroupsWithFourOrderedPlayersFixture"))
+                .ReturnsAsync(TestData.CreateFourGroupsWithFourOrderedPlayersFixture());
+
+            _seasonRepositoryMock
                 .Setup(x => x.SaveAsync(It.IsAny<SeasonFixture>()))
                 .Returns(Task.CompletedTask);
-
+            
             _sutFunction = new Function(_seasonRepositoryMock.Object, _playerRepositoryMock.Object);
             _testContext = new TestLambdaContext();
         }
@@ -320,6 +324,62 @@ namespace EndGroupStageFunction.Tests
                 f.Players.Any(fp => fp.PlayerId == TestData.Player9Guid && fp.GroupRank == 4) &&
 
                 f.Ranking.Any(f => f.PlayerId == TestData.Player4Guid && f.Rank == 9 && f.Score == 71.24)
+
+            )), Times.Once);
+
+            _seasonRepositoryMock.VerifyNoOtherCalls();
+
+            Assert.Equal((int)HttpStatusCode.OK, actualResponse.StatusCode);
+        }
+
+        [Fact]
+        public async Task EndGroupStageFunction_WithFourGroups()
+        {
+            // Arrange
+            var request = new APIGatewayHttpApiV2ProxyRequest
+            {
+                PathParameters = new Dictionary<string, string>
+                {
+                    { "seasonId", "" }, { "fixtureId", "CreateFourGroupsWithFourOrderedPlayersFixture" }
+                }
+            };
+
+            // Act
+            var actualResponse = await _sutFunction.FunctionHandler(request, _testContext);
+
+            // Assert
+            _seasonRepositoryMock.Verify(x => x.LoadFixtureAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            _seasonRepositoryMock.Verify(x => x.SaveAsync(It.Is<SeasonFixture>(f =>
+                f.State == FixtureState.DecidersStage &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player1Guid && fp.GroupRank == 1) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player2Guid && fp.GroupRank == 2) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player3Guid && fp.GroupRank == 3) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player4Guid && fp.GroupRank == 4) &&
+
+                f.Players.Any(fp => fp.PlayerId == TestData.Player5Guid && fp.GroupRank == 1) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player6Guid && fp.GroupRank == 2) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player7Guid && fp.GroupRank == 3) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player8Guid && fp.GroupRank == 4) &&
+
+                f.Players.Any(fp => fp.PlayerId == TestData.Player9Guid && fp.GroupRank == 1) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player10Guid && fp.GroupRank == 2) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player11Guid && fp.GroupRank == 3) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player12Guid && fp.GroupRank == 4) &&
+
+                f.Players.Any(fp => fp.PlayerId == TestData.Player13Guid && fp.GroupRank == 1) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player14Guid && fp.GroupRank == 2) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player15Guid && fp.GroupRank == 3) &&
+                f.Players.Any(fp => fp.PlayerId == TestData.Player16Guid && fp.GroupRank == 4) &&
+
+                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player1Guid && dm.PlayerTwoStats.PlayerId == TestData.Player14Guid) &&
+                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player9Guid && dm.PlayerTwoStats.PlayerId == TestData.Player6Guid) &&
+                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player5Guid && dm.PlayerTwoStats.PlayerId == TestData.Player10Guid) &&
+                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player13Guid && dm.PlayerTwoStats.PlayerId == TestData.Player2Guid) &&
+
+                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player3Guid && dm.PlayerTwoStats.PlayerId == TestData.Player16Guid) &&
+                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player11Guid && dm.PlayerTwoStats.PlayerId == TestData.Player8Guid) &&
+                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player7Guid && dm.PlayerTwoStats.PlayerId == TestData.Player12Guid) &&
+                f.DeciderMatches.Any(dm => dm.PlayerOneStats.PlayerId == TestData.Player15Guid && dm.PlayerTwoStats.PlayerId == TestData.Player4Guid)
 
             )), Times.Once);
 

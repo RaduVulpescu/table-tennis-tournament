@@ -21,6 +21,8 @@ namespace EndGroupStageFunction.Tests
         public static readonly Guid Player12Guid = Guid.Parse("CEE6370C-7BEA-49F8-B39B-4F856764DC6F");
         public static readonly Guid Player13Guid = Guid.Parse("0A356BF3-E3E5-4EBD-AD11-88EE9832D854");
         public static readonly Guid Player14Guid = Guid.Parse("E9C9714D-64D7-4055-80F9-8ABA199EFECE");
+        public static readonly Guid Player15Guid = Guid.Parse("78B4DFC1-C233-46C6-8794-D5BCD12DDF0F");
+        public static readonly Guid Player16Guid = Guid.Parse("2D1EB73D-B48C-4D25-8ECC-6CA9C966C3C2");
 
         public static SeasonFixture CreateOrderedFourPlayersGroupFixture()
         {
@@ -226,7 +228,6 @@ namespace EndGroupStageFunction.Tests
                     new FixturePlayer { PlayerId = Player8Guid },
                     new FixturePlayer { PlayerId = Player9Guid }
                 },
-                QualityAverage = 75.24,
                 GroupMatches = new List<GroupMatch>
                 {
                     CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 0),
@@ -251,6 +252,62 @@ namespace EndGroupStageFunction.Tests
                     CreateGroupMatch(Group.B, Player7Guid, Player8Guid, 3, 0),
 
                     CreateGroupMatch(Group.B, Player8Guid, Player9Guid, 3, 0)
+                }
+            };
+        }
+
+        public static SeasonFixture CreateFourGroupsWithFourOrderedPlayersFixture()
+        {
+            return new SeasonFixture
+            {
+                Players = new List<FixturePlayer>
+                {
+                    new FixturePlayer { PlayerId = Player1Guid },
+                    new FixturePlayer { PlayerId = Player2Guid },
+                    new FixturePlayer { PlayerId = Player3Guid },
+                    new FixturePlayer { PlayerId = Player4Guid },
+                    new FixturePlayer { PlayerId = Player5Guid },
+                    new FixturePlayer { PlayerId = Player6Guid },
+                    new FixturePlayer { PlayerId = Player7Guid },
+                    new FixturePlayer { PlayerId = Player8Guid },
+                    new FixturePlayer { PlayerId = Player9Guid },
+                    new FixturePlayer { PlayerId = Player10Guid },
+                    new FixturePlayer { PlayerId = Player11Guid },
+                    new FixturePlayer { PlayerId = Player12Guid },
+                    new FixturePlayer { PlayerId = Player13Guid },
+                    new FixturePlayer { PlayerId = Player14Guid },
+                    new FixturePlayer { PlayerId = Player15Guid },
+                    new FixturePlayer { PlayerId = Player16Guid }
+                },
+                GroupMatches = new List<GroupMatch>
+                {
+                    CreateGroupMatch(Group.A, Player1Guid, Player2Guid, 3, 0),
+                    CreateGroupMatch(Group.A, Player1Guid, Player3Guid, 3, 0),
+                    CreateGroupMatch(Group.A, Player1Guid, Player4Guid, 3, 0),
+                    CreateGroupMatch(Group.A, Player2Guid, Player3Guid, 3, 0),
+                    CreateGroupMatch(Group.A, Player2Guid, Player4Guid, 3, 0),
+                    CreateGroupMatch(Group.A, Player3Guid, Player4Guid, 3, 0),
+
+                    CreateGroupMatch(Group.B, Player5Guid, Player6Guid, 3, 0),
+                    CreateGroupMatch(Group.B, Player5Guid, Player7Guid, 3, 0),
+                    CreateGroupMatch(Group.B, Player5Guid, Player8Guid, 3, 0),
+                    CreateGroupMatch(Group.B, Player6Guid, Player7Guid, 3, 0),
+                    CreateGroupMatch(Group.B, Player6Guid, Player8Guid, 3, 0),
+                    CreateGroupMatch(Group.B, Player7Guid, Player8Guid, 3, 0),
+
+                    CreateGroupMatch(Group.C, Player9Guid, Player10Guid, 3, 0),
+                    CreateGroupMatch(Group.C, Player9Guid, Player11Guid, 3, 0),
+                    CreateGroupMatch(Group.C, Player9Guid, Player12Guid, 3, 0),
+                    CreateGroupMatch(Group.C, Player10Guid, Player11Guid, 3, 0),
+                    CreateGroupMatch(Group.C, Player10Guid, Player12Guid, 3, 0),
+                    CreateGroupMatch(Group.C, Player11Guid, Player12Guid, 3, 0),
+
+                    CreateGroupMatch(Group.D, Player13Guid, Player14Guid, 3, 0),
+                    CreateGroupMatch(Group.D, Player13Guid, Player15Guid, 3, 0),
+                    CreateGroupMatch(Group.D, Player13Guid, Player16Guid, 3, 0),
+                    CreateGroupMatch(Group.D, Player14Guid, Player15Guid, 3, 0),
+                    CreateGroupMatch(Group.D, Player14Guid, Player16Guid, 3, 0),
+                    CreateGroupMatch(Group.D, Player15Guid, Player16Guid, 3, 0)
                 }
             };
         }

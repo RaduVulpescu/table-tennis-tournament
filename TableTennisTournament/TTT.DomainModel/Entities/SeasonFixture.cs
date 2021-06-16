@@ -23,8 +23,7 @@ namespace TTT.DomainModel.Entities
         public FixtureType Type { get; set; }
         public List<FixturePlayer> Players { get; set; }
         public List<GroupMatch> GroupMatches { get; set; }
-        public List<Match> DeciderMatches { get; set; }
-        public List<Pyramid> Pyramids { get; set; }
+        public List<DeciderMatch> DeciderMatches { get; set; }
         public List<FixturePlayerRank> Ranking { get; set; }
 
         public static SeasonFixture Create(Guid seasonId, FixtureType type, DateTime? date = null, string location = null)
@@ -40,7 +39,6 @@ namespace TTT.DomainModel.Entities
                 QualityAverage = 0d,
                 State = FixtureState.Upcoming,
                 Type = type,
-                Pyramids = new List<Pyramid>(),
                 GroupMatches = new List<GroupMatch>(),
                 Ranking = new List<FixturePlayerRank>()
             };
@@ -77,16 +75,42 @@ namespace TTT.DomainModel.Entities
         public int? GroupRank { get; set; }
     }
 
+    public abstract class Match
+    {
+        public Guid MatchId { get; set; }
+        public PlayerMatchStats PlayerOneStats { get; set; }
+        public PlayerMatchStats PlayerTwoStats { get; set; }
+    }
+
     public class GroupMatch : Match
     {
         public Group Group { get; set; }
     }
 
-    public class Match
+    public class DeciderMatch : Match
     {
-        public Guid MatchId { get; set; }
-        public PlayerMatchStats PlayerOneStats { get; set; }
-        public PlayerMatchStats PlayerTwoStats { get; set; }
+        public PyramidType Pyramid { get; set; }
+        public int Depth { get; set; }
+
+        public static DeciderMatch Create(Guid matchId, PyramidType pyramid, int depth, FixturePlayer playerOne, FixturePlayer playerTwo)
+        {
+            return new DeciderMatch
+            {
+                MatchId = matchId,
+                Pyramid = pyramid,
+                Depth = depth,
+                PlayerOneStats = new PlayerMatchStats
+                {
+                    PlayerId = playerOne.PlayerId,
+                    PlayerName = playerOne.Name
+                },
+                PlayerTwoStats = new PlayerMatchStats
+                {
+                    PlayerId = playerTwo.PlayerId,
+                    PlayerName = playerTwo.Name
+                },
+            };
+        }
     }
 
     public class FixturePlayerRank

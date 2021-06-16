@@ -141,7 +141,7 @@ namespace EndGroupStageFunction
 
         private static void CreateDecidersForTwoGroups(SeasonFixture fixture)
         {
-            fixture.DeciderMatches = new List<Match>();
+            fixture.DeciderMatches = new List<DeciderMatch>();
 
             var groupsAndPlayers = GetGroupsAndPlayers(fixture);
 
@@ -156,7 +156,7 @@ namespace EndGroupStageFunction
 
                 var matchId = Guid.NewGuid();
 
-                fixture.DeciderMatches.Add(new Match
+                fixture.DeciderMatches.Add(new DeciderMatch
                 {
                     MatchId = matchId,
                     PlayerOneStats = new PlayerMatchStats
@@ -196,7 +196,7 @@ namespace EndGroupStageFunction
 
         private static void CreateDecidersForFourGroups(SeasonFixture fixture)
         {
-            fixture.DeciderMatches = new List<Match>();
+            fixture.DeciderMatches = new List<DeciderMatch>();
 
             var groupsAndPlayers = GetGroupsAndPlayers(fixture);
 
@@ -205,7 +205,15 @@ namespace EndGroupStageFunction
             var groupC = GetGroupPlayers(groupsAndPlayers, Group.C);
             var groupD = GetGroupPlayers(groupsAndPlayers, Group.D);
 
-            
+            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_1_2, 2, groupA[0], groupD[1]));
+            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_1_2, 2, groupC[0], groupB[1]));
+            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_1_2, 2, groupB[0], groupC[1]));
+            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_1_2, 2, groupD[0], groupA[1]));
+
+            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_9_10, 2, groupA[2], groupD[3]));
+            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_9_10, 2, groupC[2], groupB[3]));
+            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_9_10, 2, groupB[2], groupC[3]));
+            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_9_10, 2, groupD[2], groupA[3]));
         }
 
         private static List<Tuple<Group, List<FixturePlayer>>> GetGroupsAndPlayers(SeasonFixture fixture)
@@ -214,10 +222,10 @@ namespace EndGroupStageFunction
 
             var groupsAndPlayers =
                 (from @group in groupsAndMatches
-                    let groupPlayers = fixture.Players.Where(fp =>
-                        @group.Select(x => x.PlayerOneStats.PlayerId).Contains(fp.PlayerId) ||
-                        @group.Select(x => x.PlayerTwoStats.PlayerId).Contains(fp.PlayerId)).ToList()
-                    select new Tuple<Group, List<FixturePlayer>>(@group.Key, groupPlayers)).ToList();
+                 let groupPlayers = fixture.Players.Where(fp =>
+                     @group.Select(x => x.PlayerOneStats.PlayerId).Contains(fp.PlayerId) ||
+                     @group.Select(x => x.PlayerTwoStats.PlayerId).Contains(fp.PlayerId)).ToList()
+                 select new Tuple<Group, List<FixturePlayer>>(@group.Key, groupPlayers)).ToList();
 
             return groupsAndPlayers;
         }
