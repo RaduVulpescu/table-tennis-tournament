@@ -41,6 +41,7 @@ namespace TTT.DomainModel.DTO
 
     public struct PatchedFixtureDTO
     {
+        public FixtureState State { get; set; }
         public IEnumerable<FlattenPyramidDTO> Pyramids { get; set; }
         public IEnumerable<FixturePlayerRank> Ranking { get; set; }
 

@@ -94,6 +94,7 @@ namespace PatchDeciderMatchFunction
 
             var responseBody = new PatchedFixtureDTO
             {
+                State = fixture.State,
                 Pyramids = fixture.Pyramids.OrderBy(x => x.Type).Select(p => p.PyramidToDTO()),
                 Ranking = fixture.Ranking
             };
