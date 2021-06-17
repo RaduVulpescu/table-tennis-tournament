@@ -8,6 +8,7 @@ using Amazon.Lambda.Core;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using TTT.DomainModel;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
 using TTT.DomainModel.Enums;
@@ -93,13 +94,13 @@ namespace PatchDeciderMatchFunction
 
             var responseBody = new PatchedFixtureDTO
             {
-                Pyramids = fixture.Pyramids.OrderBy(x => x.Type).Select(SeasonMapper.PyramidToDTO),
+                Pyramids = fixture.Pyramids.OrderBy(x => x.Type).Select(p => p.PyramidToDTO()),
                 Ranking = fixture.Ranking
             };
 
             return new APIGatewayHttpApiV2ProxyResponse
             {
-                StatusCode = (int) HttpStatusCode.OK,
+                StatusCode = (int)HttpStatusCode.OK,
                 Body = JsonConvert.SerializeObject(responseBody)
             };
         }

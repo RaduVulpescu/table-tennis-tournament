@@ -5,6 +5,21 @@ using TTT.DomainModel.Enums;
 
 namespace TTT.DomainModel.DTO
 {
+    public struct FixtureGetDTO
+    {
+        public Guid SeasonId { get; set; }
+        public Guid FixtureId { get; set; }
+        public DateTime? Date { get; set; }
+        public string Location { get; set; }
+        public double QualityAverage { get; set; }
+        public FixtureState State { get; set; }
+        public FixtureType Type { get; set; }
+        public List<FixturePlayer> Players { get; set; }
+        public List<GroupMatch> GroupMatches { get; set; }
+        public IEnumerable<FlattenPyramidDTO> Pyramids { get; set; }
+        public List<FixturePlayerRank> Ranking { get; set; }
+    }
+
     public struct FixturePostDTO
     {
         public DateTime Date { get; set; }

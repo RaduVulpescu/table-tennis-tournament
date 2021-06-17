@@ -8,6 +8,7 @@ using Amazon.Lambda.Core;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using TTT.DomainModel;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
 using TTT.DomainModel.Enums;
@@ -76,7 +77,7 @@ namespace EndGroupStageFunction
 
             var responseBody = new PatchedFixtureDTO
             {
-                Pyramids = fixture.Pyramids?.OrderBy(x => x.Type).Select(SeasonMapper.PyramidToDTO),
+                Pyramids = fixture.Pyramids?.OrderBy(x => x.Type).Select(p => p.PyramidToDTO()),
                 Ranking = fixture.Ranking
             };
 
