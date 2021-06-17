@@ -59,16 +59,6 @@ namespace TTT.DomainModel.Entities
                 Right = BuildPyramid(combatants, 2 * index + 2, level + 1)
             };
 
-            if (currentNode.Left != null)
-            {
-                currentNode.Left.Parent = currentNode;
-            }
-
-            if (currentNode.Right != null)
-            {
-                currentNode.Right.Parent = currentNode;
-            }
-
             return currentNode;
         }
 
@@ -125,11 +115,12 @@ namespace TTT.DomainModel.Entities
         public PlayerMatchStats PlayerTwoStats { get; set; }
         public bool IsFinished { get; set; }
 
-        public Node Parent { get; set; }
         public Node Left { get; set; }
         public Node Right { get; set; }
 
         public bool IsLeft { get; set; }
+
+        public Node() { }
 
         public Node(Tuple<FixturePlayer, FixturePlayer> combatants)
         {
@@ -142,9 +133,15 @@ namespace TTT.DomainModel.Entities
             PlayerTwoStats = new PlayerMatchStats { PlayerId = playerTwo.PlayerId, PlayerName = playerTwo.Name };
         }
 
-        public Node FindSibling()
+        public Node FindParent(Pyramid pyramid)
         {
-            return IsLeft ? Parent?.Right : Parent?.Left;
+            return FindParent(MatchId, pyramid.Root);
+        }
+
+        public Node FindSibling(Pyramid pyramid)
+        {
+            var parent = FindParent(pyramid);
+            return IsLeft ? parent?.Right : parent?.Left;
         }
 
         public PlayerMatchStats GetWinner()
@@ -159,6 +156,20 @@ namespace TTT.DomainModel.Entities
             if (!PlayerOneStats.SetsWon.HasValue || !PlayerTwoStats.SetsWon.HasValue) return null;
 
             return PlayerOneStats.SetsWon.Value < PlayerTwoStats.SetsWon.Value ? PlayerOneStats : PlayerTwoStats;
+        }
+
+        private Node FindParent(Guid matchId, Node currentNode)
+        {
+            if (currentNode.Level >= Level || currentNode.Left == null || currentNode.Right == null) return null;
+
+            if (currentNode.Left.MatchId == matchId || currentNode.Right.MatchId == matchId)
+            {
+                return currentNode;
+            }
+
+            var foundNode = FindParent(matchId, currentNode.Left);
+
+            return foundNode ?? FindParent(matchId, currentNode.Right);
         }
     }
 }

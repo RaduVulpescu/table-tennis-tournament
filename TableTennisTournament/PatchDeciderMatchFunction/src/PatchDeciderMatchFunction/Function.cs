@@ -151,11 +151,21 @@ namespace PatchDeciderMatchFunction
         {
             var (winner, _) = FinishMatch(match);
 
-            var siblingMatch = match.FindSibling();
-            if (!siblingMatch.IsFinished) return;
+            var parent = match.FindParent(pyramid);
+            var sibling = match.IsLeft ? parent.Right : parent.Left;
+            if (!sibling.IsFinished) return;
 
-            match.Parent.PlayerOneStats = match.IsLeft ? winner : siblingMatch.GetWinner();
-            match.Parent.PlayerTwoStats = match.IsLeft ? siblingMatch.GetWinner() : winner;
+            parent.PlayerOneStats = new PlayerMatchStats
+            {
+                PlayerId = match.IsLeft ? winner.PlayerId : sibling.GetWinner().PlayerId,
+                PlayerName = match.IsLeft ? winner.PlayerName : sibling.GetWinner().PlayerName
+            };
+
+            parent.PlayerTwoStats = new PlayerMatchStats
+            {
+                PlayerId = match.IsLeft ? sibling.GetWinner().PlayerId : winner.PlayerId,
+                PlayerName = match.IsLeft ? sibling.GetWinner().PlayerName : winner.PlayerName
+            };
 
             var newPyramidType = (PyramidType)(match.Level + (int)pyramid.Type);
 
