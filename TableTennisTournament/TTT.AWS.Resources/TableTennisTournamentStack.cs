@@ -247,11 +247,11 @@ namespace TTT.AWS.Resources
 
             httpApi.AddRoutes(new AddRoutesOptions
             {
-                Path = "/seasons/{seasonId}/fixtures/{fixtureId}/endGroup",
+                Path = "/seasons/{seasonId}/fixtures/{fixtureId}/endGroupStage",
                 Methods = new[] { HttpMethod.POST },
                 Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
                 {
-                    Handler = patchGroupMatchFunction
+                    Handler = endGroupStageFunction
                 })
             });
 
@@ -261,7 +261,7 @@ namespace TTT.AWS.Resources
                 Methods = new[] { HttpMethod.PATCH },
                 Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
                 {
-                    Handler = patchGroupMatchFunction
+                    Handler = patchDeciderMatchFunction
                 })
             });
         }
