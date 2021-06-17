@@ -91,12 +91,16 @@ namespace PatchDeciderMatchFunction
 
             await _seasonRepository.SaveAsync(fixture);
 
+            var responseBody = new PatchedFixtureDTO
+            {
+                Pyramids = fixture.Pyramids.OrderBy(x => x.Type).Select(SeasonMapper.PyramidToDTO),
+                Ranking = fixture.Ranking
+            };
+
             return new APIGatewayHttpApiV2ProxyResponse
             {
                 StatusCode = (int) HttpStatusCode.OK,
-                Body = match.Level == 0
-                    ? JsonConvert.SerializeObject(fixture.Ranking)
-                    : JsonConvert.SerializeObject(fixture.Pyramids)
+                Body = JsonConvert.SerializeObject(responseBody)
             };
         }
 

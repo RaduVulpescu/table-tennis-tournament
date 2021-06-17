@@ -43,6 +43,12 @@ namespace TTT.DomainModel.Entities
             return matchesOnLevel;
         }
 
+        public List<Node> ToList()
+        {
+            var list = new List<Node>();
+            return ToList(list, Root);
+        }
+
         private static Node BuildPyramid(IReadOnlyList<Tuple<FixturePlayer, FixturePlayer>> combatants, int index = 0,
             int level = 0, bool isLeft = false)
         {
@@ -103,6 +109,26 @@ namespace TTT.DomainModel.Entities
 
             FindMatchesOnLevel(level, nodesOnLevel, currentNode.Left);
             FindMatchesOnLevel(level, nodesOnLevel, currentNode.Right);
+        }
+
+        public List<Node> ToList(List<Node> list, Node currentNode)
+        {
+            if (currentNode == null) return list;
+
+            ToList(list, currentNode.Left);
+            ToList(list, currentNode.Right);
+
+            var insertIndex = list.FindLastIndex(x => x.Level == currentNode.Level);
+            if (insertIndex == -1)
+            {
+                list.Add(currentNode);
+            }
+            else
+            {
+                list.Insert(insertIndex + 1, currentNode);
+            }
+
+            return list;
         }
     }
 

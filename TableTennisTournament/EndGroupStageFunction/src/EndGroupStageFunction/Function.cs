@@ -7,6 +7,8 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
 using TTT.DomainModel.Enums;
 using TTT.Seasons.Repository;
@@ -72,9 +74,16 @@ namespace EndGroupStageFunction
 
             await _seasonRepository.SaveAsync(fixture);
 
+            var responseBody = new PatchedFixtureDTO
+            {
+                Pyramids = fixture.Pyramids?.OrderBy(x => x.Type).Select(SeasonMapper.PyramidToDTO),
+                Ranking = fixture.Ranking
+            };
+
             return new APIGatewayHttpApiV2ProxyResponse
             {
-                StatusCode = (int)HttpStatusCode.OK
+                StatusCode = (int)HttpStatusCode.OK,
+                Body = JsonConvert.SerializeObject(responseBody)
             };
         }
 

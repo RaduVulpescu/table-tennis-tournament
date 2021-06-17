@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TTT.DomainModel.Entities;
+using TTT.DomainModel.Enums;
 
 namespace TTT.DomainModel.DTO
 {
@@ -21,5 +22,25 @@ namespace TTT.DomainModel.DTO
     {
         public int SetsWonByPlayerOne { get; set; }
         public int SetsWonByPlayerTwo { get; set; }
+    }
+
+    public struct PatchedFixtureDTO
+    {
+        public IEnumerable<FlattenPyramidDTO> Pyramids { get; set; }
+        public IEnumerable<FixturePlayerRank> Ranking { get; set; }
+
+    }
+
+    public struct FlattenPyramidDTO
+    {
+        public PyramidType Type { get; set; }
+        public List<MatchDTO> Matches { get; set; }
+    }
+
+    public struct MatchDTO
+    {
+        public Guid MatchId { get; set; }
+        public PlayerMatchStats PlayerOneStats { get; set; }
+        public PlayerMatchStats PlayerTwoStats { get; set; }
     }
 }

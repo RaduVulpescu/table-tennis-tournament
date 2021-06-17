@@ -24,22 +24,22 @@ namespace PatchDeciderMatchFunction.Tests
         public static readonly Guid Player15Guid = Guid.Parse("78B4DFC1-C233-46C6-8794-D5BCD12DDF0F");
         public static readonly Guid Player16Guid = Guid.Parse("2D1EB73D-B48C-4D25-8ECC-6CA9C966C3C2");
 
-        public static readonly FixturePlayer Player1 = new FixturePlayer { PlayerId = Player1Guid };
-        public static readonly FixturePlayer Player2 = new FixturePlayer { PlayerId = Player2Guid };
-        public static readonly FixturePlayer Player3 = new FixturePlayer { PlayerId = Player3Guid };
-        public static readonly FixturePlayer Player4 = new FixturePlayer { PlayerId = Player4Guid };
-        public static readonly FixturePlayer Player5 = new FixturePlayer { PlayerId = Player5Guid };
-        public static readonly FixturePlayer Player6 = new FixturePlayer { PlayerId = Player6Guid };
-        public static readonly FixturePlayer Player7 = new FixturePlayer { PlayerId = Player7Guid };
-        public static readonly FixturePlayer Player8 = new FixturePlayer { PlayerId = Player8Guid };
-        public static readonly FixturePlayer Player9 = new FixturePlayer { PlayerId = Player9Guid };
-        public static readonly FixturePlayer Player10 = new FixturePlayer { PlayerId = Player10Guid };
-        public static readonly FixturePlayer Player11 = new FixturePlayer { PlayerId = Player11Guid };
-        public static readonly FixturePlayer Player12 = new FixturePlayer { PlayerId = Player12Guid };
-        public static readonly FixturePlayer Player13 = new FixturePlayer { PlayerId = Player13Guid };
-        public static readonly FixturePlayer Player14 = new FixturePlayer { PlayerId = Player14Guid };
-        public static readonly FixturePlayer Player15 = new FixturePlayer { PlayerId = Player15Guid };
-        public static readonly FixturePlayer Player16 = new FixturePlayer { PlayerId = Player16Guid };
+        public static readonly FixturePlayer Player1 = new FixturePlayer { PlayerId = Player1Guid, Name = "Player1" };
+        public static readonly FixturePlayer Player2 = new FixturePlayer { PlayerId = Player2Guid, Name = "Player2" };
+        public static readonly FixturePlayer Player3 = new FixturePlayer { PlayerId = Player3Guid, Name = "Player3" };
+        public static readonly FixturePlayer Player4 = new FixturePlayer { PlayerId = Player4Guid, Name = "Player4" };
+        public static readonly FixturePlayer Player5 = new FixturePlayer { PlayerId = Player5Guid, Name = "Player5" };
+        public static readonly FixturePlayer Player6 = new FixturePlayer { PlayerId = Player6Guid, Name = "Player6" };
+        public static readonly FixturePlayer Player7 = new FixturePlayer { PlayerId = Player7Guid, Name = "Player7" };
+        public static readonly FixturePlayer Player8 = new FixturePlayer { PlayerId = Player8Guid, Name = "Player8" };
+        public static readonly FixturePlayer Player9 = new FixturePlayer { PlayerId = Player9Guid, Name = "Player9" };
+        public static readonly FixturePlayer Player10 = new FixturePlayer { PlayerId = Player10Guid, Name = "Player10" };
+        public static readonly FixturePlayer Player11 = new FixturePlayer { PlayerId = Player11Guid, Name = "Player11" };
+        public static readonly FixturePlayer Player12 = new FixturePlayer { PlayerId = Player12Guid, Name = "Player12" };
+        public static readonly FixturePlayer Player13 = new FixturePlayer { PlayerId = Player13Guid, Name = "Player13" };
+        public static readonly FixturePlayer Player14 = new FixturePlayer { PlayerId = Player14Guid, Name = "Player14" };
+        public static readonly FixturePlayer Player15 = new FixturePlayer { PlayerId = Player15Guid, Name = "Player15" };
+        public static readonly FixturePlayer Player16 = new FixturePlayer { PlayerId = Player16Guid, Name = "Player16" };
 
         public static readonly Guid MatchGuid1 = Guid.Parse("4B6E39B9-9C82-4D84-9288-9307834F9126");
         public static readonly Guid MatchGuid2 = Guid.Parse("500091C3-9123-4405-93D4-E336653ED726");
