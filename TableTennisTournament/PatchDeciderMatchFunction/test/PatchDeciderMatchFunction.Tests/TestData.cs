@@ -54,7 +54,7 @@ namespace PatchDeciderMatchFunction.Tests
                         Type = PyramidType.Ranks_1_2,
                         Root = new Node(new Tuple<FixturePlayer, FixturePlayer>(playerOne , playerTwo))
                         {
-                            Depth = 0,
+                            Level = 0,
                             MatchId = MatchGuid1
                         }
                     }
@@ -90,7 +90,7 @@ namespace PatchDeciderMatchFunction.Tests
                         Type = PyramidType.Ranks_7_8,
                         Root = new Node(new Tuple<FixturePlayer, FixturePlayer>(playerOne , playerTwo))
                         {
-                            Depth = 0,
+                            Level = 0,
                             MatchId = MatchGuid1
                         }
                     }
@@ -125,7 +125,7 @@ namespace PatchDeciderMatchFunction.Tests
                         Type = PyramidType.Ranks_5_6,
                         Root = new Node(new Tuple<FixturePlayer, FixturePlayer>(playerOne , playerTwo))
                         {
-                            Depth = 0,
+                            Level = 0,
                             MatchId = MatchGuid1
                         }
                     }

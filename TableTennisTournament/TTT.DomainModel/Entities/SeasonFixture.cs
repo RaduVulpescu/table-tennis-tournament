@@ -90,15 +90,15 @@ namespace TTT.DomainModel.Entities
     public class DeciderMatch : Match
     {
         public PyramidType Pyramid { get; set; }
-        public int Depth { get; set; }
+        public int Level { get; set; }
 
-        public static DeciderMatch Create(Guid matchId, PyramidType pyramid, int depth, FixturePlayer playerOne, FixturePlayer playerTwo)
+        public static DeciderMatch Create(Guid matchId, PyramidType pyramid, int level, FixturePlayer playerOne, FixturePlayer playerTwo)
         {
             return new DeciderMatch
             {
                 MatchId = matchId,
                 Pyramid = pyramid,
-                Depth = depth,
+                Level = level,
                 PlayerOneStats = new PlayerMatchStats
                 {
                     PlayerId = playerOne.PlayerId,

@@ -322,19 +322,19 @@ namespace EndGroupStageFunction.Tests
 
                 f.Pyramids.Any(p =>
                     p.Type == PyramidType.Ranks_1_2 &&
-                    p.FindMatchByPlayers(TestData.Player1Guid, TestData.Player6Guid).Depth == 0) &&
+                    p.FindMatchByPlayers(TestData.Player1Guid, TestData.Player6Guid).Level == 0) &&
 
                 f.Pyramids.Any(p =>
                     p.Type == PyramidType.Ranks_3_4 &&
-                    p.FindMatchByPlayers(TestData.Player2Guid, TestData.Player7Guid).Depth == 0) &&
+                    p.FindMatchByPlayers(TestData.Player2Guid, TestData.Player7Guid).Level == 0) &&
 
                 f.Pyramids.Any(p =>
                     p.Type == PyramidType.Ranks_5_6 &&
-                    p.FindMatchByPlayers(TestData.Player3Guid, TestData.Player8Guid).Depth == 0) &&
+                    p.FindMatchByPlayers(TestData.Player3Guid, TestData.Player8Guid).Level == 0) &&
 
                 f.Pyramids.Any(p =>
                     p.Type == PyramidType.Ranks_7_8 &&
-                    p.FindMatchByPlayers(TestData.Player5Guid, TestData.Player9Guid).Depth == 0) &&
+                    p.FindMatchByPlayers(TestData.Player5Guid, TestData.Player9Guid).Level == 0) &&
 
                 f.Ranking.Any(f => f.PlayerId == TestData.Player4Guid && f.Rank == 9 && f.Score == 71.24)
 
@@ -385,28 +385,28 @@ namespace EndGroupStageFunction.Tests
                 f.Players.Any(fp => fp.PlayerId == TestData.Player16Guid && fp.GroupRank == 4) &&
 
                 f.Pyramids.Any(p => p.Type == PyramidType.Ranks_1_2 &&
-                    p.FindMatchByPlayers(TestData.Player1Guid, TestData.Player14Guid).Depth == 2) &&
+                    p.FindMatchByPlayers(TestData.Player1Guid, TestData.Player14Guid).Level == 2) &&
 
                 f.Pyramids.Any(p => p.Type == PyramidType.Ranks_1_2 &&
-                    p.FindMatchByPlayers(TestData.Player9Guid, TestData.Player6Guid).Depth == 2) &&
+                    p.FindMatchByPlayers(TestData.Player9Guid, TestData.Player6Guid).Level == 2) &&
 
                 f.Pyramids.Any(p => p.Type == PyramidType.Ranks_1_2 &&
-                    p.FindMatchByPlayers(TestData.Player5Guid, TestData.Player10Guid).Depth == 2) &&
+                    p.FindMatchByPlayers(TestData.Player5Guid, TestData.Player10Guid).Level == 2) &&
 
                 f.Pyramids.Any(p => p.Type == PyramidType.Ranks_1_2 &&
-                    p.FindMatchByPlayers(TestData.Player13Guid, TestData.Player2Guid).Depth == 2) &&
+                    p.FindMatchByPlayers(TestData.Player13Guid, TestData.Player2Guid).Level == 2) &&
 
                 f.Pyramids.Any(p => p.Type == PyramidType.Ranks_9_10 &&
-                    p.FindMatchByPlayers(TestData.Player3Guid, TestData.Player16Guid).Depth == 2) &&
+                    p.FindMatchByPlayers(TestData.Player3Guid, TestData.Player16Guid).Level == 2) &&
 
                 f.Pyramids.Any(p => p.Type == PyramidType.Ranks_9_10 &&
-                    p.FindMatchByPlayers(TestData.Player11Guid, TestData.Player8Guid).Depth == 2) &&
+                    p.FindMatchByPlayers(TestData.Player11Guid, TestData.Player8Guid).Level == 2) &&
 
                 f.Pyramids.Any(p => p.Type == PyramidType.Ranks_9_10 &&
-                    p.FindMatchByPlayers(TestData.Player7Guid, TestData.Player12Guid).Depth == 2) &&
+                    p.FindMatchByPlayers(TestData.Player7Guid, TestData.Player12Guid).Level == 2) &&
 
                 f.Pyramids.Any(p => p.Type == PyramidType.Ranks_9_10 &&
-                    p.FindMatchByPlayers(TestData.Player15Guid, TestData.Player4Guid).Depth == 2)
+                    p.FindMatchByPlayers(TestData.Player15Guid, TestData.Player4Guid).Level == 2)
             )), Times.Once);
 
             _seasonRepositoryMock.VerifyNoOtherCalls();

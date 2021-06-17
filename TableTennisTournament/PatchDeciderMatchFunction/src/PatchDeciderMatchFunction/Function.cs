@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -79,39 +80,29 @@ namespace PatchDeciderMatchFunction
             match.PlayerOneStats.SetsWon = matchPutDTO.SetsWonByPlayerOne;
             match.PlayerTwoStats.SetsWon = matchPutDTO.SetsWonByPlayerTwo;
 
-            if (match.Depth == 0)
+            if (match.Level == 0)
             {
                 DecideRanks(fixture, pyramid, match);
             }
             else
             {
-                HandleNextMatch(fixture, match);
+                CreateNextMatches(fixture, pyramid, match);
             }
 
             await _seasonRepository.SaveAsync(fixture);
 
             return new APIGatewayHttpApiV2ProxyResponse
             {
-                StatusCode = (int)HttpStatusCode.OK,
-                Body = JsonConvert.SerializeObject(fixture.Ranking)
+                StatusCode = (int) HttpStatusCode.OK,
+                Body = match.Level == 0
+                    ? JsonConvert.SerializeObject(fixture.Ranking)
+                    : JsonConvert.SerializeObject(fixture.Pyramids)
             };
         }
 
         private static void DecideRanks(SeasonFixture fixture, Pyramid pyramid, Node match)
         {
-            PlayerMatchStats winner;
-            PlayerMatchStats loser;
-
-            if (match.PlayerOneStats.SetsWon!.Value > match.PlayerTwoStats.SetsWon!.Value)
-            {
-                winner = match.PlayerOneStats;
-                loser = match.PlayerTwoStats;
-            }
-            else
-            {
-                winner = match.PlayerTwoStats;
-                loser = match.PlayerOneStats;
-            }
+            var (winner, loser) = FinishMatch(match);
 
             var matchPyramid = (int)pyramid.Type;
             var winnerRank = matchPyramid * 2 + 1;
@@ -156,11 +147,68 @@ namespace PatchDeciderMatchFunction
             });
         }
 
-        private void HandleNextMatch(SeasonFixture fixture, Node match)
+        private static void CreateNextMatches(SeasonFixture fixture, Pyramid pyramid, Node match)
         {
-            // fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_1_2, 2, groupA[0], groupD[1]));
+            var (winner, _) = FinishMatch(match);
 
-              
+            var siblingMatch = match.FindSibling();
+            if (!siblingMatch.IsFinished) return;
+
+            match.Parent.PlayerOneStats = match.IsLeft ? winner : siblingMatch.GetWinner();
+            match.Parent.PlayerTwoStats = match.IsLeft ? siblingMatch.GetWinner() : winner;
+
+            var newPyramidType = (PyramidType)(match.Level + (int)pyramid.Type);
+
+            var levelThatContainsTheMatchesRequiredForTheNewPyramid = (int)newPyramidType;
+
+            var matchesOnLevel = pyramid.FindMatchesOnLevel(levelThatContainsTheMatchesRequiredForTheNewPyramid);
+
+            var allLevelMatchesAreFinished = matchesOnLevel.Aggregate(true,
+                (current, matchOnLevel) => current && matchOnLevel.IsFinished);
+
+            if (!allLevelMatchesAreFinished) return;
+
+            AddNewPyramid(fixture, matchesOnLevel, newPyramidType);
+        }
+
+        private static void AddNewPyramid(SeasonFixture fixture, List<Node> matchesOnLevel, PyramidType newPyramidType)
+        {
+            var combatants = new List<Tuple<FixturePlayer, FixturePlayer>>();
+            for (var i = 0; i < matchesOnLevel.Count - 1; i += 2)
+            {
+                var leftMatch = matchesOnLevel[i];
+                var rightMatch = matchesOnLevel[i + 1];
+
+                var firstCombatant = fixture.Players.Single(p => p.PlayerId == leftMatch.GetLoser().PlayerId);
+                var secondCombatant = fixture.Players.Single(p => p.PlayerId == rightMatch.GetLoser().PlayerId);
+
+                combatants.Add(new Tuple<FixturePlayer, FixturePlayer>(firstCombatant, secondCombatant));
+            }
+
+            var newPyramid = Pyramid.CreatePyramid(combatants, newPyramidType);
+
+            fixture.Pyramids.Add(newPyramid);
+        }
+
+        private static Tuple<PlayerMatchStats, PlayerMatchStats> FinishMatch(Node match)
+        {
+            PlayerMatchStats winner;
+            PlayerMatchStats loser;
+
+            if (match.PlayerOneStats.SetsWon!.Value > match.PlayerTwoStats.SetsWon!.Value)
+            {
+                winner = match.PlayerOneStats;
+                loser = match.PlayerTwoStats;
+            }
+            else
+            {
+                winner = match.PlayerTwoStats;
+                loser = match.PlayerOneStats;
+            }
+
+            match.IsFinished = true;
+
+            return new Tuple<PlayerMatchStats, PlayerMatchStats>(winner, loser);
         }
     }
 }
