@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -39,7 +40,17 @@ namespace PatchDeciderMatchFunction
 
             var seasonId = request.PathParameters["seasonId"];
             var fixtureId = request.PathParameters["fixtureId"];
-            var matchId = request.PathParameters["matchId"];
+            var matchIdString = request.PathParameters["matchId"];
+            var exists = Guid.TryParse(matchIdString, out var matchId);
+
+            if (!exists)
+            {
+                return new APIGatewayHttpApiV2ProxyResponse
+                {
+                    Body = $"Match with id {matchIdString} Not Found",
+                    StatusCode = (int)HttpStatusCode.NotFound
+                };
+            }
 
             var fixture = await _seasonRepository.LoadFixtureAsync(seasonId, fixtureId);
             if (fixture is null)
@@ -51,22 +62,24 @@ namespace PatchDeciderMatchFunction
                 };
             }
 
-            var match = fixture.DeciderMatches.SingleOrDefault(gm => gm.MatchId.ToString() == matchId);
-            if (match is null)
+            var pyramid = fixture.Pyramids.SingleOrDefault(a => a.FindMatchById(matchId) != null);
+            if (pyramid is null)
             {
                 return new APIGatewayHttpApiV2ProxyResponse
                 {
-                    Body = $"Match with id {matchId} Not Found",
+                    Body = $"Match with id {matchIdString} Not Found",
                     StatusCode = (int)HttpStatusCode.NotFound
                 };
             }
+
+            var match = pyramid.FindMatchById(matchId);
 
             match.PlayerOneStats.SetsWon = matchPutDTO.SetsWonByPlayerOne;
             match.PlayerTwoStats.SetsWon = matchPutDTO.SetsWonByPlayerTwo;
 
             if (match.Depth == 0)
             {
-                DecideRanks(fixture, match);
+                DecideRanks(fixture, pyramid, match);
             }
             else
             {
@@ -81,7 +94,7 @@ namespace PatchDeciderMatchFunction
             };
         }
 
-        private static void DecideRanks(SeasonFixture fixture, DeciderMatch match)
+        private static void DecideRanks(SeasonFixture fixture, Pyramid pyramid, Node match)
         {
             PlayerMatchStats winner;
             PlayerMatchStats loser;
@@ -97,7 +110,7 @@ namespace PatchDeciderMatchFunction
                 loser = match.PlayerOneStats;
             }
 
-            var matchPyramid = (int)match.Pyramid;
+            var matchPyramid = (int)pyramid.Type;
             var winnerRank = matchPyramid * 2 + 1;
 
             var averageRankingPyramid = fixture.Players.Count / 4;
@@ -135,9 +148,11 @@ namespace PatchDeciderMatchFunction
             });
         }
 
-        private void HandleNextMatch(SeasonFixture fixture, DeciderMatch match)
+        private void HandleNextMatch(SeasonFixture fixture, Node match)
         {
-            throw new System.NotImplementedException();
+            // fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_1_2, 2, groupA[0], groupD[1]));
+
+              
         }
     }
 }

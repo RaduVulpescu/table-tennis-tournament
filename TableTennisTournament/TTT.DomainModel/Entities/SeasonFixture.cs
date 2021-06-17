@@ -23,7 +23,7 @@ namespace TTT.DomainModel.Entities
         public FixtureType Type { get; set; }
         public List<FixturePlayer> Players { get; set; }
         public List<GroupMatch> GroupMatches { get; set; }
-        public List<DeciderMatch> DeciderMatches { get; set; }
+        public List<Pyramid> Pyramids { get; set; }
         public List<FixturePlayerRank> Ranking { get; set; }
 
         public static SeasonFixture Create(Guid seasonId, FixtureType type, DateTime? date = null, string location = null)

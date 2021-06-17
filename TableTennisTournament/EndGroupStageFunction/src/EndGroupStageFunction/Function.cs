@@ -138,7 +138,7 @@ namespace EndGroupStageFunction
         // ReSharper disable twice PossibleLossOfFraction
         private static void CreateDecidersForTwoGroups(SeasonFixture fixture)
         {
-            fixture.DeciderMatches = new List<DeciderMatch>();
+            fixture.Pyramids = new List<Pyramid>();
 
             var groupsAndPlayers = GetGroupsAndPlayers(fixture);
 
@@ -148,8 +148,12 @@ namespace EndGroupStageFunction
             var i = 0;
             for (; i < groupA.Length && i < groupB.Length; i++)
             {
-                var matchId = Guid.NewGuid();
-                fixture.DeciderMatches.Add(DeciderMatch.Create(matchId, (PyramidType)i, 0, groupA[i], groupB[i]));
+                var deciderMatches = new List<Tuple<FixturePlayer, FixturePlayer>>
+                {
+                    new Tuple<FixturePlayer, FixturePlayer>(groupA[i], groupB[i])
+                };
+
+                fixture.Pyramids.Add(Pyramid.CreatePyramid(deciderMatches, (PyramidType)i));
             }
 
             if (groupA.Length > groupB.Length)
@@ -176,7 +180,7 @@ namespace EndGroupStageFunction
 
         private static void CreateDecidersForFourGroups(SeasonFixture fixture)
         {
-            fixture.DeciderMatches = new List<DeciderMatch>();
+            fixture.Pyramids = new List<Pyramid>();
 
             var groupsAndPlayers = GetGroupsAndPlayers(fixture);
 
@@ -185,15 +189,24 @@ namespace EndGroupStageFunction
             var groupC = GetGroupPlayers(groupsAndPlayers, Group.C);
             var groupD = GetGroupPlayers(groupsAndPlayers, Group.D);
 
-            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_1_2, 2, groupA[0], groupD[1]));
-            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_1_2, 2, groupC[0], groupB[1]));
-            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_1_2, 2, groupB[0], groupC[1]));
-            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_1_2, 2, groupD[0], groupA[1]));
+            var deciderMatchesForFirstPlace = new List<Tuple<FixturePlayer, FixturePlayer>>
+            {
+                new Tuple<FixturePlayer, FixturePlayer>(groupA[0], groupD[1]),
+                new Tuple<FixturePlayer, FixturePlayer>(groupC[0], groupB[1]),
+                new Tuple<FixturePlayer, FixturePlayer>(groupB[0], groupC[1]),
+                new Tuple<FixturePlayer, FixturePlayer>(groupD[0], groupA[1]),
+            };
 
-            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_9_10, 2, groupA[2], groupD[3]));
-            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_9_10, 2, groupC[2], groupB[3]));
-            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_9_10, 2, groupB[2], groupC[3]));
-            fixture.DeciderMatches.Add(DeciderMatch.Create(Guid.NewGuid(), PyramidType.Ranks_9_10, 2, groupD[2], groupA[3]));
+            var deciderMatchesForNinthPlace = new List<Tuple<FixturePlayer, FixturePlayer>>
+            {
+                new Tuple<FixturePlayer, FixturePlayer>(groupA[2], groupD[3]),
+                new Tuple<FixturePlayer, FixturePlayer>(groupC[2], groupB[3]),
+                new Tuple<FixturePlayer, FixturePlayer>(groupB[2], groupC[3]),
+                new Tuple<FixturePlayer, FixturePlayer>(groupD[2], groupA[3])
+            };
+
+            fixture.Pyramids.Add(Pyramid.CreatePyramid(deciderMatchesForFirstPlace, PyramidType.Ranks_1_2));
+            fixture.Pyramids.Add(Pyramid.CreatePyramid(deciderMatchesForNinthPlace, PyramidType.Ranks_9_10));
         }
 
         private static List<Tuple<Group, List<FixturePlayer>>> GetGroupsAndPlayers(SeasonFixture fixture)
