@@ -6,8 +6,10 @@ using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
+using TTT.DomainModel.Enums;
 using TTT.Seasons.Repository;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -90,7 +92,8 @@ namespace PatchDeciderMatchFunction
 
             return new APIGatewayHttpApiV2ProxyResponse
             {
-                StatusCode = (int)HttpStatusCode.NoContent
+                StatusCode = (int)HttpStatusCode.OK,
+                Body = JsonConvert.SerializeObject(fixture.Ranking)
             };
         }
 
@@ -114,7 +117,7 @@ namespace PatchDeciderMatchFunction
             var winnerRank = matchPyramid * 2 + 1;
 
             var averageRankingPyramid = fixture.Players.Count / 4;
-            var supplement = matchPyramid - averageRankingPyramid;
+            var supplement = averageRankingPyramid - matchPyramid;
 
             double winnerScore;
             double loserScore;
@@ -129,6 +132,11 @@ namespace PatchDeciderMatchFunction
             {
                 winnerScore = score;
                 loserScore = score - 1;
+            }
+
+            if (pyramid.Type == PyramidType.Ranks_1_2)
+            {
+                winnerScore++;
             }
 
             fixture.Ranking.Add(new FixturePlayerRank

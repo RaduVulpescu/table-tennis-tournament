@@ -24,15 +24,20 @@ namespace PatchDeciderMatchFunction.Tests
         public static readonly Guid Player15Guid = Guid.Parse("78B4DFC1-C233-46C6-8794-D5BCD12DDF0F");
         public static readonly Guid Player16Guid = Guid.Parse("2D1EB73D-B48C-4D25-8ECC-6CA9C966C3C2");
 
+        public static readonly Guid MatchGuid1 = Guid.Parse("4B6E39B9-9C82-4D84-9288-9307834F9126");
+
         public static SeasonFixture CreateFixtureWithZeroDepthPyramid()
         {
+            var playerOne = new FixturePlayer { PlayerId = Player1Guid };
+            var playerTwo = new FixturePlayer { PlayerId = Player2Guid };
+
             return new SeasonFixture
             {
                 QualityAverage = 70,
                 Players = new List<FixturePlayer>
                 {
-                    new FixturePlayer { PlayerId = Player1Guid },
-                    new FixturePlayer { PlayerId = Player2Guid },
+                    playerOne,
+                    playerTwo,
                     new FixturePlayer { PlayerId = Player3Guid },
                     new FixturePlayer { PlayerId = Player4Guid },
                     new FixturePlayer { PlayerId = Player5Guid },
@@ -47,12 +52,85 @@ namespace PatchDeciderMatchFunction.Tests
                     new Pyramid
                     {
                         Type = PyramidType.Ranks_1_2,
-                        Root = new Node(new Tuple<FixturePlayer, FixturePlayer>(null , null))
+                        Root = new Node(new Tuple<FixturePlayer, FixturePlayer>(playerOne , playerTwo))
                         {
-                            MatchId = Guid.NewGuid()
+                            Depth = 0,
+                            MatchId = MatchGuid1
                         }
                     }
-                }
+                },
+                Ranking = new List<FixturePlayerRank>()
+            };
+        }
+
+        public static SeasonFixture CreateFixtureWithZeroDepthPyramidForRank7And8()
+        {
+            var playerOne = new FixturePlayer { PlayerId = Player1Guid };
+            var playerTwo = new FixturePlayer { PlayerId = Player2Guid };
+
+            return new SeasonFixture
+            {
+                QualityAverage = 70,
+                Players = new List<FixturePlayer>
+                {
+                    playerOne,
+                    playerTwo,
+                    new FixturePlayer { PlayerId = Player3Guid },
+                    new FixturePlayer { PlayerId = Player4Guid },
+                    new FixturePlayer { PlayerId = Player5Guid },
+                    new FixturePlayer { PlayerId = Player6Guid },
+                    new FixturePlayer { PlayerId = Player7Guid },
+                    new FixturePlayer { PlayerId = Player8Guid },
+                    new FixturePlayer { PlayerId = Player9Guid }
+                },
+                Pyramids = new List<Pyramid>
+                {
+                    new Pyramid
+                    {
+                        Type = PyramidType.Ranks_7_8,
+                        Root = new Node(new Tuple<FixturePlayer, FixturePlayer>(playerOne , playerTwo))
+                        {
+                            Depth = 0,
+                            MatchId = MatchGuid1
+                        }
+                    }
+                },
+                Ranking = new List<FixturePlayerRank>()
+            };
+        }
+
+        public static SeasonFixture CreateFixtureWithZeroDepthMatchForRank5And6()
+        {
+            var playerOne = new FixturePlayer { PlayerId = Player1Guid };
+            var playerTwo = new FixturePlayer { PlayerId = Player2Guid };
+
+            return new SeasonFixture
+            {
+                QualityAverage = 70,
+                Players = new List<FixturePlayer>
+                {
+                    playerOne,
+                    playerTwo,
+                    new FixturePlayer { PlayerId = Player3Guid },
+                    new FixturePlayer { PlayerId = Player4Guid },
+                    new FixturePlayer { PlayerId = Player5Guid },
+                    new FixturePlayer { PlayerId = Player6Guid },
+                    new FixturePlayer { PlayerId = Player7Guid },
+                    new FixturePlayer { PlayerId = Player8Guid }
+                },
+                Pyramids = new List<Pyramid>
+                {
+                    new Pyramid
+                    {
+                        Type = PyramidType.Ranks_5_6,
+                        Root = new Node(new Tuple<FixturePlayer, FixturePlayer>(playerOne , playerTwo))
+                        {
+                            Depth = 0,
+                            MatchId = MatchGuid1
+                        }
+                    }
+                },
+                Ranking = new List<FixturePlayerRank>()
             };
         }
     }
