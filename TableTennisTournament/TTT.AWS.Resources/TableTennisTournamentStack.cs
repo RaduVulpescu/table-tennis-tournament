@@ -94,8 +94,8 @@ namespace TTT.AWS.Resources
             var patchGroupMatchFunction = CreateFunction("patch-group-match-function", "PatchGroupMatchFunction");
             table.GrantDescribeReadWriteData(patchGroupMatchFunction);
 
-            var endGroupFunction = CreateFunction("end-group-function", "EndGroupFunction");
-            table.GrantDescribeReadWriteData(endGroupFunction);
+            var endGroupStageFunction = CreateFunction("end-group-stage-function", "EndGroupStageFunction");
+            table.GrantDescribeReadWriteData(endGroupStageFunction);
 
             var patchDeciderMatchFunction = CreateFunction("patch-decider-match-function", "PatchDeciderMatchFunction");
             table.GrantDescribeReadWriteData(patchDeciderMatchFunction);
