@@ -9,7 +9,6 @@ using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TTT.DomainModel;
-using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
 using TTT.DomainModel.Enums;
 using TTT.Seasons.Repository;
@@ -111,8 +110,6 @@ namespace EndGroupStageFunction
                 Rank = orderedPlayers[i].GroupRank!.Value,
                 Score = score + 1
             });
-
-            fixture.State = FixtureState.Finished;
         }
 
         private static void HandleTwoGroupsEnding(SeasonFixture fixture, IEnumerable<Group> groups)

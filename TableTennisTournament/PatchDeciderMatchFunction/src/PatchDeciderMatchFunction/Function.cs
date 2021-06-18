@@ -150,7 +150,7 @@ namespace PatchDeciderMatchFunction
         {
             var (winner, _) = FinishMatch(match);
 
-            var parent = match.FindParent(pyramid);
+            var parent = pyramid.FindParent(match);
             var sibling = match.IsLeft ? parent.Right : parent.Left;
             if (!sibling.IsFinished) return;
 
@@ -168,9 +168,7 @@ namespace PatchDeciderMatchFunction
 
             var newPyramidType = (PyramidType)(match.Level + (int)pyramid.Type);
 
-            var levelThatContainsTheMatchesRequiredForTheNewPyramid = (int)newPyramidType;
-
-            var matchesOnLevel = pyramid.FindMatchesOnLevel(levelThatContainsTheMatchesRequiredForTheNewPyramid);
+            var matchesOnLevel = pyramid.FindMatchesOnLevel(match.Level);
 
             var allLevelMatchesAreFinished = matchesOnLevel.Aggregate(true,
                 (current, matchOnLevel) => current && matchOnLevel.IsFinished);

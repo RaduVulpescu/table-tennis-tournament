@@ -84,15 +84,14 @@ namespace EndGroupStageFunction.Tests
             // Assert
             _seasonRepositoryMock.Verify(x => x.LoadFixtureAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             _seasonRepositoryMock.Verify(x => x.SaveAsync(It.Is<SeasonFixture>(f =>
-                f.State == FixtureState.Finished &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player1Guid && fp.GroupRank == 1) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player2Guid && fp.GroupRank == 2) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player3Guid && fp.GroupRank == 3) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player4Guid && fp.GroupRank == 4) &&
-                f.Ranking.Any(f => f.PlayerId == TestData.Player1Guid && f.Rank == 1 && f.Score == 78.24) &&
-                f.Ranking.Any(f => f.PlayerId == TestData.Player2Guid && f.Rank == 2 && f.Score == 76.24) &&
-                f.Ranking.Any(f => f.PlayerId == TestData.Player3Guid && f.Rank == 3 && f.Score == 75.24) &&
-                f.Ranking.Any(f => f.PlayerId == TestData.Player4Guid && f.Rank == 4 && f.Score == 74.24)
+                f.Ranking.Any(fpr => fpr.PlayerId == TestData.Player1Guid && fpr.Rank == 1 && fpr.Score == 78.24) &&
+                f.Ranking.Any(fpr => fpr.PlayerId == TestData.Player2Guid && fpr.Rank == 2 && fpr.Score == 76.24) &&
+                f.Ranking.Any(fpr => fpr.PlayerId == TestData.Player3Guid && fpr.Rank == 3 && fpr.Score == 75.24) &&
+                f.Ranking.Any(fpr => fpr.PlayerId == TestData.Player4Guid && fpr.Rank == 4 && fpr.Score == 74.24)
             )), Times.Once);
 
             _seasonRepositoryMock.VerifyNoOtherCalls();
@@ -118,17 +117,16 @@ namespace EndGroupStageFunction.Tests
             // Assert
             _seasonRepositoryMock.Verify(x => x.LoadFixtureAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             _seasonRepositoryMock.Verify(x => x.SaveAsync(It.Is<SeasonFixture>(f =>
-                f.State == FixtureState.Finished &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player1Guid && fp.GroupRank == 1) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player2Guid && fp.GroupRank == 2) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player3Guid && fp.GroupRank == 3) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player4Guid && fp.GroupRank == 5) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player5Guid && fp.GroupRank == 4) &&
-                f.Ranking.Any(f => f.PlayerId == TestData.Player1Guid && f.Rank == 1 && f.Score == 71.86) &&
-                f.Ranking.Any(f => f.PlayerId == TestData.Player2Guid && f.Rank == 2 && f.Score == 69.86) &&
-                f.Ranking.Any(f => f.PlayerId == TestData.Player3Guid && f.Rank == 3 && f.Score == 68.86) &&
-                f.Ranking.Any(f => f.PlayerId == TestData.Player4Guid && f.Rank == 5 && f.Score == 66.86) &&
-                f.Ranking.Any(f => f.PlayerId == TestData.Player5Guid && f.Rank == 4 && f.Score == 67.86)
+                f.Ranking.Any(fpr => fpr.PlayerId == TestData.Player1Guid && fpr.Rank == 1 && fpr.Score == 71.86) &&
+                f.Ranking.Any(fpr => fpr.PlayerId == TestData.Player2Guid && fpr.Rank == 2 && fpr.Score == 69.86) &&
+                f.Ranking.Any(fpr => fpr.PlayerId == TestData.Player3Guid && fpr.Rank == 3 && fpr.Score == 68.86) &&
+                f.Ranking.Any(fpr => fpr.PlayerId == TestData.Player4Guid && fpr.Rank == 5 && fpr.Score == 66.86) &&
+                f.Ranking.Any(fpr => fpr.PlayerId == TestData.Player5Guid && fpr.Rank == 4 && fpr.Score == 67.86)
 
             )), Times.Once);
 
@@ -155,7 +153,6 @@ namespace EndGroupStageFunction.Tests
             // Assert
             _seasonRepositoryMock.Verify(x => x.LoadFixtureAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             _seasonRepositoryMock.Verify(x => x.SaveAsync(It.Is<SeasonFixture>(f =>
-                f.State == FixtureState.Finished &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player1Guid && fp.GroupRank == 1) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player2Guid && fp.GroupRank == 3) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player3Guid && fp.GroupRank == 2) &&
@@ -185,7 +182,6 @@ namespace EndGroupStageFunction.Tests
             // Assert
             _seasonRepositoryMock.Verify(x => x.LoadFixtureAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             _seasonRepositoryMock.Verify(x => x.SaveAsync(It.Is<SeasonFixture>(f =>
-                f.State == FixtureState.Finished &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player1Guid && fp.GroupRank == 1) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player2Guid && fp.GroupRank == 3) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player3Guid && fp.GroupRank == 2) &&
@@ -215,7 +211,6 @@ namespace EndGroupStageFunction.Tests
             // Assert
             _seasonRepositoryMock.Verify(x => x.LoadFixtureAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             _seasonRepositoryMock.Verify(x => x.SaveAsync(It.Is<SeasonFixture>(f =>
-                f.State == FixtureState.Finished &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player1Guid && fp.GroupRank == 1) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player2Guid && fp.GroupRank == 4) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player3Guid && fp.GroupRank == 3) &&
@@ -245,7 +240,6 @@ namespace EndGroupStageFunction.Tests
             // Assert
             _seasonRepositoryMock.Verify(x => x.LoadFixtureAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             _seasonRepositoryMock.Verify(x => x.SaveAsync(It.Is<SeasonFixture>(f =>
-                f.State == FixtureState.Finished &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player1Guid && fp.GroupRank == 1) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player2Guid && fp.GroupRank == 3) &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player3Guid && fp.GroupRank == 2) &&
@@ -275,7 +269,6 @@ namespace EndGroupStageFunction.Tests
             // Assert
             _seasonRepositoryMock.Verify(x => x.LoadFixtureAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
             _seasonRepositoryMock.Verify(x => x.SaveAsync(It.Is<SeasonFixture>(f =>
-                f.State == FixtureState.Finished &&
                 f.Players.Any(fp => fp.PlayerId == TestData.Player1Guid && fp.GroupRank == 1) &&
                 f.Players.Single(p => p.PlayerId == TestData.Player2Guid).GroupRank.HasValue &&
                 f.Players.Single(p => p.PlayerId == TestData.Player3Guid).GroupRank.HasValue &&
@@ -336,7 +329,7 @@ namespace EndGroupStageFunction.Tests
                     p.Type == PyramidType.Ranks_7_8 &&
                     p.FindMatchByPlayers(TestData.Player5Guid, TestData.Player9Guid).Level == 0) &&
 
-                f.Ranking.Any(f => f.PlayerId == TestData.Player4Guid && f.Rank == 9 && f.Score == 71.24)
+                f.Ranking.Any(fpr => fpr.PlayerId == TestData.Player4Guid && fpr.Rank == 9 && fpr.Score == 71.24)
 
             )), Times.Once);
 

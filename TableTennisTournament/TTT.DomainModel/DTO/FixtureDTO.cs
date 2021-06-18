@@ -14,6 +14,7 @@ namespace TTT.DomainModel.DTO
         public double QualityAverage { get; set; }
         public FixtureState State { get; set; }
         public FixtureType Type { get; set; }
+        public bool CanBeEnded { get; set; }
         public List<FixturePlayer> Players { get; set; }
         public List<GroupMatch> GroupMatches { get; set; }
         public IEnumerable<FlattenPyramidDTO> Pyramids { get; set; }
@@ -43,6 +44,7 @@ namespace TTT.DomainModel.DTO
     {
         public PyramidType Type { get; set; }
         public List<MatchDTO> Matches { get; set; }
+        public bool IsComplete { get; set; }
     }
 
     public struct MatchDTO

@@ -87,32 +87,6 @@ namespace TTT.DomainModel.Entities
         public Group Group { get; set; }
     }
 
-    public class DeciderMatch : Match
-    {
-        public PyramidType Pyramid { get; set; }
-        public int Level { get; set; }
-
-        public static DeciderMatch Create(Guid matchId, PyramidType pyramid, int level, FixturePlayer playerOne, FixturePlayer playerTwo)
-        {
-            return new DeciderMatch
-            {
-                MatchId = matchId,
-                Pyramid = pyramid,
-                Level = level,
-                PlayerOneStats = new PlayerMatchStats
-                {
-                    PlayerId = playerOne.PlayerId,
-                    PlayerName = playerOne.Name
-                },
-                PlayerTwoStats = new PlayerMatchStats
-                {
-                    PlayerId = playerTwo.PlayerId,
-                    PlayerName = playerTwo.Name
-                },
-            };
-        }
-    }
-
     public class FixturePlayerRank
     {
         public Guid PlayerId { get; set; }
