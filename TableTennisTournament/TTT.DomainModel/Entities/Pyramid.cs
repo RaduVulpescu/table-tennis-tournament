@@ -150,7 +150,7 @@ namespace TTT.DomainModel.Entities
 
         public Node(Tuple<FixturePlayer, FixturePlayer> combatants)
         {
-            MatchId = new Guid();
+            MatchId = Guid.NewGuid();
 
             var (playerOne, playerTwo) = combatants;
             if (playerOne == null || playerTwo == null) return;
@@ -162,12 +162,6 @@ namespace TTT.DomainModel.Entities
         public Node FindParent(Pyramid pyramid)
         {
             return FindParent(MatchId, pyramid.Root);
-        }
-
-        public Node FindSibling(Pyramid pyramid)
-        {
-            var parent = FindParent(pyramid);
-            return IsLeft ? parent?.Right : parent?.Left;
         }
 
         public PlayerMatchStats GetWinner()
