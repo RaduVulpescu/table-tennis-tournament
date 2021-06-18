@@ -92,17 +92,10 @@ namespace PatchDeciderMatchFunction
 
             await _seasonRepository.SaveAsync(fixture);
 
-            var responseBody = new PatchedFixtureDTO
-            {
-                State = fixture.State,
-                Pyramids = fixture.Pyramids.OrderBy(x => x.Type).Select(p => p.PyramidToDTO()),
-                Ranking = fixture.Ranking
-            };
-
             return new APIGatewayHttpApiV2ProxyResponse
             {
                 StatusCode = (int)HttpStatusCode.OK,
-                Body = JsonConvert.SerializeObject(responseBody)
+                Body = JsonConvert.SerializeObject(fixture.ToDTO())
             };
         }
 

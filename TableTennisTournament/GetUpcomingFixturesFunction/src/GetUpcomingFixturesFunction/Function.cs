@@ -6,6 +6,7 @@ using Amazon.Lambda.Core;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using TTT.DomainModel;
 using TTT.DomainModel.Enums;
 using TTT.Seasons.Repository;
 
@@ -45,12 +46,14 @@ namespace GetUpcomingFixturesFunction
 
             var dbFixtures = await _seasonRepository.LoadFixturesAsync(seasonId);
             var seasonFixtures = state == ((int) FixtureState.Upcoming).ToString()
-                ? dbFixtures.Where(x => x.State == FixtureState.Upcoming)
-                : dbFixtures.Where(x => x.State != FixtureState.Upcoming);
+                ? dbFixtures.Where(x => x.State == FixtureState.Upcoming).ToList()
+                : dbFixtures.Where(x => x.State != FixtureState.Upcoming).ToList();
+
+            var seasonFixturesDTO = seasonFixtures.Select(x => x.ToDTO());
 
             return new APIGatewayHttpApiV2ProxyResponse
             {
-                Body = JsonConvert.SerializeObject(seasonFixtures),
+                Body = JsonConvert.SerializeObject(seasonFixturesDTO),
                 StatusCode = (int)HttpStatusCode.OK
             };
         }
