@@ -32,7 +32,7 @@ namespace TTT.DomainModel
                 Players = fixture.Players,
                 GroupMatches = fixture.GroupMatches,
                 Pyramids = fixture.Pyramids.Select(p => p.PyramidToDTO()),
-                Ranking = fixture.Ranking.OrderBy(r => r.Rank).ToList()
+                Ranking = fixture.Ranking.OrderBy(r => r.Rank)
             };
         }
 

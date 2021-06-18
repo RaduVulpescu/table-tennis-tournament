@@ -17,7 +17,7 @@ namespace TTT.DomainModel.DTO
         public List<FixturePlayer> Players { get; set; }
         public List<GroupMatch> GroupMatches { get; set; }
         public IEnumerable<FlattenPyramidDTO> Pyramids { get; set; }
-        public List<FixturePlayerRank> Ranking { get; set; }
+        public IEnumerable<FixturePlayerRank> Ranking { get; set; }
     }
 
     public struct FixturePostDTO

@@ -266,7 +266,7 @@ namespace EndGroupStageFunction
 
                 if (currentPlayer.Factor == nextPlayer.Factor &&             // if current player has the same number of victories as next player
                     (i + 1 == victoryPerformances.Length - 1 ||              // if nextPlayer is last player
-                     nextPlayer.Factor > victoryPerformances[i + 2].Factor)) // if nextPlayer has more factor than player after him
+                     nextPlayer.Factor > victoryPerformances[i + 2].Factor)) // if nextPlayer has more victories than player after him
                 {
                     decidedRank = ResolveTieBetweenTwoPlayers(groupMatches, currentPlayer, nextPlayer, decidedRank);
                     i++;
@@ -342,6 +342,7 @@ namespace EndGroupStageFunction
                 if (i == playerToSetDifference.Length - 1) // if current player is last player
                 {
                     playerToSetDifference[i].FixturePlayer.GroupRank = decidedRank;
+                    decidedRank++;
                     break;
                 }
 
@@ -400,6 +401,7 @@ namespace EndGroupStageFunction
                 if (i == playerToSetDifference.Length - 1) // if current player is last player
                 {
                     playerToSetDifference[i].FixturePlayer.GroupRank = decidedRank;
+                    decidedRank++;
                     break;
                 }
 
