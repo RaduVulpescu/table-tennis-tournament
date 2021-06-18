@@ -6,6 +6,7 @@
         GroupsSelection,
         GroupsStage,
         DecidersStage,
+        ReadyToFinish,
         Finished
     }
 }

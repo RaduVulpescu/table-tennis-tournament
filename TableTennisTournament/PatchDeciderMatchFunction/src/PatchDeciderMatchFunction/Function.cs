@@ -90,6 +90,11 @@ namespace PatchDeciderMatchFunction
                 CreateNextMatches(fixture, pyramid, match);
             }
 
+            if (fixture.Ranking.Count == fixture.Players.Count)
+            {
+                fixture.State = FixtureState.ReadyToFinish;
+            }
+
             await _seasonRepository.SaveAsync(fixture);
 
             return new APIGatewayHttpApiV2ProxyResponse

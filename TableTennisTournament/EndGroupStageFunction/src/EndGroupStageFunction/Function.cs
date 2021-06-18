@@ -110,6 +110,8 @@ namespace EndGroupStageFunction
                 Rank = orderedPlayers[i].GroupRank!.Value,
                 Score = score + 1
             });
+
+            fixture.State = FixtureState.ReadyToFinish;
         }
 
         private static void HandleTwoGroupsEnding(SeasonFixture fixture, IEnumerable<Group> groups)

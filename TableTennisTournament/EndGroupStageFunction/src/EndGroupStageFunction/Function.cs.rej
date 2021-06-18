@@ -1,0 +1,10 @@
+diff a/TableTennisTournament/EndGroupStageFunction/src/EndGroupStageFunction/Function.cs b/TableTennisTournament/EndGroupStageFunction/src/EndGroupStageFunction/Function.cs	(rejected hunks)
+@@ -110,8 +110,6 @@
+                 Rank = orderedPlayers[i].GroupRank!.Value,
+                 Score = score + 1
+             });
+-
+-            fixture.State = FixtureState.Finished;
+         }
+ 
+         private static void HandleTwoGroupsEnding(SeasonFixture fixture, IEnumerable<Group> groups)
