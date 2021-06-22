@@ -17,7 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TTT.Players.Repository\TTT.Players.Repository.csproj" />
     <ProjectReference Include="..\TTT.Seasons.Repository\TTT.Seasons.Repository.csproj" />
-    <ProjectReference Include="..\TTT.Services\TTT.Services.csproj" />
+    <ProjectReference Include="..\TTT.Services\TTT.ExternalServices.csproj" />
   </ItemGroup>
 
 </Project>

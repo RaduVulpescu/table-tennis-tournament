@@ -2,7 +2,7 @@
 using Amazon.SQS;
 using Amazon.SQS.Model;
 
-namespace TTT.Services
+namespace TTT.ExternalServices
 {
     public class SqsClient : ISqsClient
     {

@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Amazon.SQS.Model;
 
-namespace TTT.Services
+namespace TTT.ExternalServices
 {
     public interface ISqsClient
     {

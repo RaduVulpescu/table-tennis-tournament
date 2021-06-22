@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Amazon.SimpleNotificationService.Model;
 
-namespace TTT.Services
+namespace TTT.ExternalServices
 {
     public interface ISnsClient
     {

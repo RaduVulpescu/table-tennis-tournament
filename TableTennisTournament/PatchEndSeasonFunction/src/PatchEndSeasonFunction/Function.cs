@@ -8,8 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Validators;
+using TTT.ExternalServices;
 using TTT.Seasons.Repository;
-using TTT.Services;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 namespace PatchEndSeasonFunction

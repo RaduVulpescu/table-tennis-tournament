@@ -178,8 +178,6 @@ namespace TTT.DomainModel.Entities
             PlayerTwoStats = new PlayerMatchStats { PlayerId = playerTwo.PlayerId, PlayerName = playerTwo.Name };
         }
 
-       
-
         public PlayerMatchStats GetWinner()
         {
             if (!PlayerOneStats.SetsWon.HasValue || !PlayerTwoStats.SetsWon.HasValue) return null;

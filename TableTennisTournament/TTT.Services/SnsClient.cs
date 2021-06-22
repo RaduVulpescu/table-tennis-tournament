@@ -1,9 +1,10 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
-namespace TTT.Services
+namespace TTT.ExternalServices
 {
     public class SnsClient : ISnsClient
     {

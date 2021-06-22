@@ -14,7 +14,6 @@ namespace TTT.DomainModel.DTO
         public double QualityAverage { get; set; }
         public FixtureState State { get; set; }
         public FixtureType Type { get; set; }
-        public bool CanBeEnded { get; set; }
         public List<FixturePlayer> Players { get; set; }
         public List<GroupMatch> GroupMatches { get; set; }
         public IEnumerable<FlattenPyramidDTO> Pyramids { get; set; }

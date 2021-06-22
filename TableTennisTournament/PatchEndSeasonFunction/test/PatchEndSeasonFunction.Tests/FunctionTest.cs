@@ -10,8 +10,8 @@ using Moq;
 using Newtonsoft.Json;
 using TTT.DomainModel.DTO;
 using TTT.DomainModel.Entities;
+using TTT.ExternalServices;
 using TTT.Seasons.Repository;
-using TTT.Services;
 using Xunit;
 
 namespace PatchEndSeasonFunction.Tests

@@ -8,8 +8,8 @@ using Amazon.SQS.Model;
 using Moq;
 using Newtonsoft.Json;
 using TTT.DomainModel.Entities;
+using TTT.ExternalServices;
 using TTT.Seasons.Repository;
-using TTT.Services;
 using Xunit;
 
 namespace SQSEventStartSeasonFunction.Tests

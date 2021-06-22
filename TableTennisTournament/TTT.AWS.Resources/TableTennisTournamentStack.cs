@@ -43,6 +43,8 @@ namespace TTT.AWS.Resources
 
             var registerDeviceTokenFunction = CreateFunction("register-device-token-function", "RegisterDeviceTokenFunction");
 
+            var sendNotificationFunction = CreateFunction("send-notification-function", "SendNotificationFunction");
+
             var getPlayersFunction = CreateFunction("get-players-function", "GetPlayersFunction");
             table.GrantDescribeReadData(getPlayersFunction);
 
@@ -112,6 +114,16 @@ namespace TTT.AWS.Resources
                 Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
                 {
                     Handler = registerDeviceTokenFunction
+                })
+            });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/aws/platformApplication/sendNotification",
+                Methods = new[] { HttpMethod.POST },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = sendNotificationFunction
                 })
             });
 

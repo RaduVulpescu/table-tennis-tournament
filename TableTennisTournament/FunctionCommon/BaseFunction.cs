@@ -3,9 +3,9 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using TTT.ExternalServices;
 using TTT.Players.Repository;
 using TTT.Seasons.Repository;
-using TTT.Services;
 
 namespace FunctionCommon
 {

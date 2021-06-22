@@ -52,7 +52,6 @@ namespace AddFixtureFunction
                 };
             }
 
-            var fixtures = await _seasonRepository.LoadFixturesAsync(seasonId);
             var newFixture = SeasonFixture.Create(
                 season.SeasonId,
                 FixtureType.Normal,
