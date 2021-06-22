@@ -24,5 +24,10 @@ namespace TTT.ExternalServices
         {
             return _snsClient.CreatePlatformEndpointAsync(request);
         }
+
+        public Task<ListEndpointsByPlatformApplicationResponse> GetEndpointsAsync(ListEndpointsByPlatformApplicationRequest request)
+        {
+            return _snsClient.ListEndpointsByPlatformApplicationAsync(request);
+        }
     }
 }

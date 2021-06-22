@@ -8,5 +8,7 @@ namespace TTT.ExternalServices
     {
         Task<PublishResponse> PublishAsync(PublishRequest request, CancellationToken cancellationToken = default);
         Task<CreatePlatformEndpointResponse> CreatePlatformEndpointAsync(CreatePlatformEndpointRequest request);
+        Task<ListEndpointsByPlatformApplicationResponse> GetEndpointsAsync(
+            ListEndpointsByPlatformApplicationRequest request);
     }
 }

@@ -50,12 +50,22 @@ namespace SendNotificationFunction
                 GCM = JsonConvert.SerializeObject(gcm)
             };
 
-            await _snsClient.PublishAsync(new PublishRequest
+            var listEndpointsRequest = new ListEndpointsByPlatformApplicationRequest
             {
-                TargetArn = "arn:aws:sns:eu-west-1:623072768925:endpoint/GCM/ttt-push-notification-app/5cbaaf96-a500-3be1-bbae-f98ad24d6f5e",
-                Message = JsonConvert.SerializeObject(pushNotificationMessage),
-                MessageStructure = "json"
-            });
+                PlatformApplicationArn = "arn:aws:sns:eu-west-1:623072768925:app/GCM/ttt-push-notification-app",
+                NextToken = null
+            };
+
+            var endpointsResponse = await _snsClient.GetEndpointsAsync(listEndpointsRequest);
+            foreach (var endpoint in endpointsResponse.Endpoints)
+            {
+                await _snsClient.PublishAsync(new PublishRequest
+                {
+                    TargetArn = endpoint.EndpointArn,
+                    Message = JsonConvert.SerializeObject(pushNotificationMessage),
+                    MessageStructure = "json"
+                });
+            }
 
             return new APIGatewayHttpApiV2ProxyResponse
             {
