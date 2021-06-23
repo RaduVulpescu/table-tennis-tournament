@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
@@ -33,24 +34,24 @@ namespace PatchEndSeasonFunction
 
         public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
         {
-            if (!TryDeserializeBody<SeasonsPatchDTO>(request.Body, out var seasonDTO, out var error))
-            {
-                return new APIGatewayHttpApiV2ProxyResponse
-                {
-                    Body = error,
-                    StatusCode = (int)HttpStatusCode.UnsupportedMediaType
-                };
-            }
+            //if (!TryDeserializeBody<SeasonsPatchDTO>(request.Body, out var seasonDTO, out var error))
+            //{
+            //    return new APIGatewayHttpApiV2ProxyResponse
+            //    {
+            //        Body = error,
+            //        StatusCode = (int)HttpStatusCode.UnsupportedMediaType
+            //    };
+            //}
 
-            var validationResult = await new SeasonValidator().ValidateAsync(seasonDTO);
-            if (!validationResult.IsValid)
-            {
-                return new APIGatewayHttpApiV2ProxyResponse
-                {
-                    Body = JsonConvert.SerializeObject(validationResult.Errors),
-                    StatusCode = (int)HttpStatusCode.BadRequest
-                };
-            }
+            //var validationResult = await new SeasonValidator().ValidateAsync(seasonDTO);
+            //if (!validationResult.IsValid)
+            //{
+            //    return new APIGatewayHttpApiV2ProxyResponse
+            //    {
+            //        Body = JsonConvert.SerializeObject(validationResult.Errors),
+            //        StatusCode = (int)HttpStatusCode.BadRequest
+            //    };
+            //}
 
             var seasonId = request.PathParameters["seasonId"];
 
@@ -64,19 +65,21 @@ namespace PatchEndSeasonFunction
                 };
             }
 
-            currentSeason.EndDate = seasonDTO.EndDate;
+            //currentSeason.EndDate = seasonDTO.EndDate;
+            currentSeason.EndDate = DateTime.UtcNow;
             await _seasonRepository.SaveAsync(currentSeason);
 
             await _snsClient.PublishAsync(new PublishRequest
             {
-                Subject = $"Season {currentSeason.Number} has ended on {seasonDTO.EndDate}.",
+                Subject = $"Season {currentSeason.Number} has ended on {currentSeason.EndDate}.",
                 Message = JsonConvert.SerializeObject(currentSeason),
                 TopicArn = "arn:aws:sns:eu-west-1:623072768925:endSeasonTopic"
             });
 
             return new APIGatewayHttpApiV2ProxyResponse
             {
-                StatusCode = (int)HttpStatusCode.NoContent
+                StatusCode = (int)HttpStatusCode.OK,
+                Body = JsonConvert.SerializeObject(currentSeason)
             };
         }
     }

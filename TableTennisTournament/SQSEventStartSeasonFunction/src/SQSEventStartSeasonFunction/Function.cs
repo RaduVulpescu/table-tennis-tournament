@@ -18,7 +18,7 @@ namespace SQSEventStartSeasonFunction
         private readonly ISqsClient _sqsClient;
 
         private const string CreateFinalQueueUrl =
-            "https://sqs.eu-west-1.amazonaws.com/623072768925/TableTennisTournamentStack-CreateFinalsQueueA094EEE3-1SLFTOGL720H9";
+            "https://sqs.eu-west-1.amazonaws.com/623072768925/TableTennisTournamentStack-CreateFinalsQueueA094EEE3-55GJCQ6DBFA5";
 
         public Function()
         {
