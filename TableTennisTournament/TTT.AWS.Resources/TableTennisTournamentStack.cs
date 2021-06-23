@@ -102,6 +102,9 @@ namespace TTT.AWS.Resources
             var patchDeciderMatchFunction = CreateFunction("patch-decider-match-function", "PatchDeciderMatchFunction");
             table.GrantDescribeReadWriteData(patchDeciderMatchFunction);
 
+            var endFixtureFunction = CreateFunction("end-fixture-function", "EndFixtureFunction");
+            table.GrantDescribeReadWriteData(endFixtureFunction);
+
             var httpApi = new HttpApi(this, "ttt-http-api", new HttpApiProps
             {
                 ApiName = "ttt-api"
@@ -274,6 +277,16 @@ namespace TTT.AWS.Resources
                 Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
                 {
                     Handler = patchDeciderMatchFunction
+                })
+            });
+
+            httpApi.AddRoutes(new AddRoutesOptions
+            {
+                Path = "/seasons/{seasonId}/fixtures/{fixtureId}/endFixture",
+                Methods = new[] { HttpMethod.POST },
+                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
+                {
+                    Handler = endFixtureFunction
                 })
             });
         }

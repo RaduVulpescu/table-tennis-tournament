@@ -9,6 +9,7 @@ namespace TTT.DomainModel.Entities
     {
         [DynamoDBHashKey]
         public string PK { get; set; }
+
         [DynamoDBRangeKey]
         public string SK { get; set; }
 
@@ -25,6 +26,25 @@ namespace TTT.DomainModel.Entities
         public double Score3 { get; set; }
         public double Score4 { get; set; }
         public double Shape { get; set; }
+
+        public static SeasonPlayer Create(string seasonId, string playerId, string name, Level level, double quality, double score1)
+        {
+            return new SeasonPlayer
+            {
+                PK = CreatePK(seasonId),
+                SK = CreateSK(playerId),
+                SeasonId = Guid.Parse(seasonId),
+                PlayerId = Guid.Parse(playerId),
+                Name = name,
+                Quality = quality,
+                Level = level,
+                Top4 = score1,
+                Score1 = score1,
+                Score2 = 0,
+                Score3 = 0,
+                Score4 = 0
+            };
+        }
 
         public static string CreatePK(string seasonId)
         {
