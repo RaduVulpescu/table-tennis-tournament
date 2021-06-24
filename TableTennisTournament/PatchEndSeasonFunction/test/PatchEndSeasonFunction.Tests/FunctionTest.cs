@@ -20,6 +20,7 @@ namespace PatchEndSeasonFunction.Tests
     {
         private readonly Mock<ISeasonRepository> _seasonRepositoryMock;
         private readonly Mock<ISnsClient> _snsClientMock;
+        private readonly Mock<ISqsClient> _sqsClientMock;
         private readonly Function _sutFunction;
         private readonly TestLambdaContext _testContext;
 
@@ -30,6 +31,7 @@ namespace PatchEndSeasonFunction.Tests
         {
             _seasonRepositoryMock = new Mock<ISeasonRepository>();
             _snsClientMock = new Mock<ISnsClient>();
+            _sqsClientMock = new Mock<ISqsClient>();
 
             _seasonRepositoryMock
                 .Setup(x => x.SaveAsync(It.IsAny<Season>()))

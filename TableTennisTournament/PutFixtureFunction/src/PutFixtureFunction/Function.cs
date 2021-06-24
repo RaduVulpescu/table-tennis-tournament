@@ -28,6 +28,8 @@ namespace PutFixtureFunction
         {
             if (!TryDeserializeBody<FixturePutDTO>(request.Body, out var fixtureDTO, out var error))
             {
+                context.Logger.Log(error);
+
                 return new APIGatewayHttpApiV2ProxyResponse
                 {
                     Body = error,

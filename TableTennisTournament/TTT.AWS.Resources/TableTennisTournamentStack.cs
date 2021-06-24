@@ -31,6 +31,7 @@ namespace TTT.AWS.Resources
             var startSeasonQueue = new Queue(this, "StartSeasonQueue");
             var updatePlayersStatsQueue = new Queue(this, "UpdatePlayerStatsQueue");
             var createFinalsQueue = new Queue(this, "CreateFinalsQueue");
+            var notifySeasonEndedQueue = new Queue(this, "NotifySeasonEndedQueue");
 
             var endSeasonTopic = new Topic(this, "EndSeasonTopic", new TopicProps
             {
@@ -40,10 +41,13 @@ namespace TTT.AWS.Resources
 
             endSeasonTopic.AddSubscription(new SqsSubscription(startSeasonQueue));
             endSeasonTopic.AddSubscription(new SqsSubscription(updatePlayersStatsQueue));
+            endSeasonTopic.AddSubscription(new SqsSubscription(notifySeasonEndedQueue));
 
             var registerDeviceTokenFunction = CreateFunction("register-device-token-function", "RegisterDeviceTokenFunction");
 
             var sendNotificationFunction = CreateFunction("send-notification-function", "SendNotificationFunction");
+            notifySeasonEndedQueue.GrantConsumeMessages(sendNotificationFunction);
+            sendNotificationFunction.AddEventSource(new SqsEventSource(notifySeasonEndedQueue));
 
             var getPlayersFunction = CreateFunction("get-players-function", "GetPlayersFunction");
             table.GrantDescribeReadData(getPlayersFunction);
@@ -117,16 +121,6 @@ namespace TTT.AWS.Resources
                 Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
                 {
                     Handler = registerDeviceTokenFunction
-                })
-            });
-
-            httpApi.AddRoutes(new AddRoutesOptions
-            {
-                Path = "/aws/platformApplication/sendNotification",
-                Methods = new[] { HttpMethod.POST },
-                Integration = new LambdaProxyIntegration(new LambdaProxyIntegrationProps
-                {
-                    Handler = sendNotificationFunction
                 })
             });
 

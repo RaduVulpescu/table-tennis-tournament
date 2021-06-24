@@ -1,13 +1,16 @@
-using System.Net;
 using System.Threading.Tasks;
-using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Amazon.Lambda.SNSEvents;
+using Amazon.Lambda.SQSEvents;
 using Amazon.SimpleNotificationService.Model;
 using FunctionCommon;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using TTT.DomainModel.Entities;
 using TTT.ExternalServices;
 
+// ReSharper disable InconsistentNaming
+// ReSharper disable MemberHidesStaticFromOuterClass
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 namespace SendNotificationFunction
 {
@@ -25,23 +28,35 @@ namespace SendNotificationFunction
             _snsClient = snsClient;
         }
 
-        public async Task<APIGatewayHttpApiV2ProxyResponse> FunctionHandler(APIGatewayHttpApiV2ProxyRequest request, ILambdaContext context)
+        public async Task FunctionHandler(SQSEvent ev, ILambdaContext context)
         {
-            if (!TryDeserializeBody<Notification>(request.Body, out var notification, out var error))
+            foreach (var sqsMessage in ev.Records)
             {
-                return new APIGatewayHttpApiV2ProxyResponse
+                context.Logger.LogLine($"Processing message to notify devices that season ended: {sqsMessage.Body}.");
+                if (!TryDeserializeBody<SNSEvent.SNSMessage>(sqsMessage.Body, out var snsMessage, out var snsDeserializationError))
                 {
-                    Body = error,
-                    StatusCode = (int)HttpStatusCode.UnsupportedMediaType
-                };
+                    context.Logger.LogLine(snsDeserializationError);
+                    continue;
+                }
+
+                await ProcessMessageAsync(snsMessage, context);
+            }
+        }
+
+        private async Task ProcessMessageAsync(SNSEvent.SNSMessage message, ILambdaContext context)
+        {
+            if (!TryDeserializeBody<Season>(message.Message, out var finishedSeason, out var seasonDeserializationError))
+            {
+                context.Logger.LogLine(seasonDeserializationError);
+                return;
             }
 
             var gcm = new GCM
             {
                 notification = new Notification
                 {
-                    title = notification.title,
-                    body = notification.body
+                    title = $"Season {finishedSeason.Number} is finished!",
+                    body = "Check out who is the winner!"
                 }
             };
 
@@ -66,11 +81,6 @@ namespace SendNotificationFunction
                     MessageStructure = "json"
                 });
             }
-
-            return new APIGatewayHttpApiV2ProxyResponse
-            {
-                StatusCode = (int)HttpStatusCode.OK
-            };
         }
 
         internal class PushNotificationMessage
