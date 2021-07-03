@@ -74,6 +74,11 @@ namespace TTT.AWS.Resources
             startSeasonFunction.AddEventSource(new SqsEventSource(startSeasonQueue));
             createFinalsQueue.GrantSendMessages(startSeasonFunction);
 
+            var updatePlayerStatsFunction = CreateFunction("update-players-stats-function", "SQSEventUpdatePlayersStatsFunction");
+            table.GrantDescribeReadWriteData(updatePlayerStatsFunction);
+            updatePlayersStatsQueue.GrantConsumeMessages(updatePlayerStatsFunction);
+            updatePlayerStatsFunction.AddEventSource(new SqsEventSource(updatePlayersStatsQueue));
+
             var createFinalsFunction = CreateFunction("create-finals-function", "SQSEventCreateFinalsFunction");
             table.GrantDescribeWriteData(createFinalsFunction);
             createFinalsQueue.GrantConsumeMessages(createFinalsFunction);

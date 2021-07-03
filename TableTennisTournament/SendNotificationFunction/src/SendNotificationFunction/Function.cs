@@ -40,6 +40,8 @@ namespace SendNotificationFunction
                 }
 
                 await ProcessMessageAsync(snsMessage, context);
+
+                context.Logger.LogLine($"Finished the processing of message to notify devices that season ended.");
             }
         }
 
